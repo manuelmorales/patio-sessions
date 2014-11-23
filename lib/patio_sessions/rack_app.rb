@@ -1,7 +1,8 @@
 require 'json'
+require 'lotus/router'
 
 module PatioSessions
-  class RackApp
+  class RackInfo
     def self.call env
       # get '/admin/info' do
       headers = { 'Content-Type' => 'application/json' }
@@ -12,6 +13,10 @@ module PatioSessions
       status = 200
       [status, headers, [body]]
     end
+  end
+
+  RackApp = Lotus::Router.new do
+    get '/admin/info', to: RackInfo
   end
 end
 
