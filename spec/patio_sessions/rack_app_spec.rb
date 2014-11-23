@@ -11,9 +11,7 @@ describe 'RackApp' do
   it 'routes /sessions/:id' do
     path = "/sessions/a-session-id"
 
-    action = app.instance_variable_get(:@router).routes.map(&:dest).detect{|a| a.is_a?(Lotus::Routing::Endpoint) && a.__getobj__.is_a?(SessionsController::Show) }
-    action = app.instance_variable_get(:@router).recognize(Rack::MockRequest.env_for(path, method: 'GET')).first.first.route.dest
-    expect(action).to eq(action)
+    action = app.recognize :get, path
 
     expect(action).to receive(:call) do |env|
       expect(env['router.params']).to eq(id: 'a-session-id')
