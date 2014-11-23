@@ -2,11 +2,10 @@ require 'lotus/controller'
 
 module PatioSessions
   class SessionsController
-    class Show
-      include Lotus::Action
-      accept :json
-      configuration.default_format :json
+    include Lotus::Controller
+    configuration.default_format :json
 
+    action 'Show' do
       def call(params)
         self.body = '{}'
       end
