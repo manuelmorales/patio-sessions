@@ -1,6 +1,6 @@
 require_relative '../rack_spec_helper'
 
-describe RackApp do
+describe 'RackApp' do
   let(:app){ RackApp }
 
   it 'returns 404 for unknown paths' do
@@ -8,31 +8,18 @@ describe RackApp do
     expect(last_response.status).to eq 404
   end
 
-  context 'GET /sessions/:id' do
-    context 'successful' do
-      let(:path) { "/sessions/#{session_id}" }
-      let(:session_id) { 'a-session-id' }
+  it 'routes /sessions/:id' do
+    path = "/sessions/a-session-id"
 
-      def do_request
-        get path, {}, 'HTTP_ACCEPT' => 'application/json'
-      end
+    action = app.instance_variable_get(:@router).routes.map(&:dest).detect{|a| a.is_a?(Lotus::Routing::Endpoint) && a.__getobj__.is_a?(SessionsController::Show) }
+    action = app.instance_variable_get(:@router).recognize(Rack::MockRequest.env_for(path, method: 'GET')).first.first.route.dest
+    expect(action).to eq(action)
 
-      it 'works setting the extension in the path' do
-        get path + '.json'
-        expect(last_response.status).to eq 200
-        expect(last_response.content_type).to eq('application/json')
-      end
-
-      it 'returns status 200' do
-        do_request
-        expect(last_response.status).to eq 200
-      end
-
-      it 'returns valid JSON' do
-        do_request
-        expect(last_response.content_type).to eq('application/json')
-        JSON.parse(last_response.body)
-      end
+    expect(action).to receive(:call) do |env|
+      expect(env['router.params']).to eq(id: 'a-session-id')
+      [200, {}, []]
     end
+
+    get path, {}, 'HTTP_ACCEPT' => 'application/json'
   end
 end
