@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'puma'
   s.add_dependency 'thor'
   s.add_dependency 'lotus-router'
+  s.add_dependency 'lotus-controller'
 
   s.add_development_dependency 'pry'
   s.add_development_dependency 'pry-byebug'
