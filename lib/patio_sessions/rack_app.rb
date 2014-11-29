@@ -16,7 +16,7 @@ module PatioSessions
     def self.lotus_router
       @router ||= Lotus::Router.new do
         get '/admin/info', to: RackInfo
-        get '/sessions/:id', to: SessionsController::Show
+        get '/sessions/:id', to: SessionsController::Show.new
       end
     end
   end
