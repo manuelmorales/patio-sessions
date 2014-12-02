@@ -3,6 +3,10 @@ require 'lotus/controller'
 module PatioSessions
   class SessionsController
     class Show
+      def self.call env
+        new.call env
+      end
+
       def call env
         session = sessions_repo.find(env['router.params'][:id])
 

@@ -30,6 +30,20 @@ describe SessionsController do
         expect(last_response.content_type).to eq('application/json')
       end
 
+      it 'creates new instances for each request for thread safety' do
+        instances = []
+
+        allow_any_instance_of(SessionsController::Show).to receive(:call) do |action, env|
+          instances << action
+          [200, {}, []]
+        end
+
+        do_request
+        do_request
+
+        expect(instances.length).to eq 2
+        expect(instances.first).not_to eq instances.last
+      end
 
       context 'successful' do
         it 'returns status 200' do
