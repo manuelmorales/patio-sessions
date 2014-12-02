@@ -8,11 +8,8 @@ module PatioSessions
       end
 
       def call env
-        session = sessions_repo.find(env['router.params'][:id])
-
-        body id: session.id
-        header 'Content-Type', 'application/json'
-
+        @env = env
+        action
         render
       end
 
@@ -27,6 +24,15 @@ module PatioSessions
       end
 
       private
+
+      def action
+        session = sessions_repo.find(session_id)
+        body id: session.id
+      end
+
+      def session_id
+        env['router.params'][:id]
+      end
 
       NULL = Object.new
 
@@ -47,7 +53,7 @@ module PatioSessions
       end
 
       def headers
-        @headers ||= {}
+        @headers ||= {'Content-Type' => 'application/json'}
       end
 
       def status value = NULL
@@ -60,6 +66,10 @@ module PatioSessions
 
       def render
         [status, headers, [body.to_json]]
+      end
+
+      def env
+        @env
       end
     end
   end
