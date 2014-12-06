@@ -1,22 +1,16 @@
 require_relative '../rack_spec_helper'
 
 describe 'integration' do
-  let(:app){ RackApp }
+  let(:app){ patio_app.rack }
+  let(:patio_app) { PatioSessions.new }
 
   describe 'GET /sessions/:id' do
     let(:path) { "/sessions/#{session_id}" }
-
-    let(:sessions_repo) do 
-      SessionsMemoryRepo.new.tap do |r|
-        r.save session
-      end
-    end
-
     let(:session) { Session.new id: session_id }
     let(:session_id) { 'a-session-id' }
 
     before do
-      SessionsController::Show.sessions_repo = sessions_repo
+      patio_app.sessions_show_action.sessions_repo.save session
     end
 
     def do_request
