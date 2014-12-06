@@ -13,7 +13,7 @@ describe SessionsController do
     end
 
     context 'Rack integration' do
-      let(:app){ RackApp }
+      let(:app){ App.new.rack }
 
       def do_request
         get path, {}, 'HTTP_ACCEPT' => 'application/json'

@@ -10,7 +10,7 @@ describe 'integration' do
     let(:session_id) { 'a-session-id' }
 
     before do
-      patio_app.sessions_show_action.sessions_repo.save session
+      patio_app.repos.sessions.save session
     end
 
     def do_request

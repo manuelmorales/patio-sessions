@@ -30,20 +30,4 @@ module PatioSessions
       App.new
     end
   end
-
-  class App
-    def sessions_repo
-      @sessions_repo ||= SessionsMemoryRepo.new
-    end
-
-    def sessions_show_action
-      @sessions_show_action ||= SessionsController::Show.tap do |a|
-        a.sessions_repo = sessions_repo
-      end
-    end
-
-    def rack
-      RackApp
-    end
-  end
 end

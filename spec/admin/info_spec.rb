@@ -1,7 +1,7 @@
 require_relative '../rack_spec_helper'
 
 RSpec.describe '/admin/info' do
-  let(:app){ PatioSessions::RackApp }
+  let(:app){ App.new.rack }
   let(:path){ '/admin/info' }
   let(:parsed_response){ JSON.parse(last_response.body) }
 
