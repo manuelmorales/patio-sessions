@@ -1,5 +1,3 @@
-require 'lotus/controller'
-
 module PatioSessions
   class SessionsController
     class Show

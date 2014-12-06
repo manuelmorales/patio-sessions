@@ -25,10 +25,5 @@ rescue Bundler::BundlerError => e
   exit 1
 end
 
-root_path = File.expand_path(File.dirname(__FILE__) + '/..')
-lib_path = root_path + '/lib'
-$LOAD_PATH.unshift(root_path) unless $LOAD_PATH.include?(root_path)
-$LOAD_PATH.unshift(lib_path) unless $LOAD_PATH.include?(lib_path)
-
-require 'patio_sessions'
+require_relative File.dirname(__FILE__) + '/../lib/patio_sessions'
 

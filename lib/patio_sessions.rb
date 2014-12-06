@@ -1,8 +1,27 @@
-require 'patio_sessions/version'
+require 'active_support'
 
 module PatioSessions
-  autoload :Cli, 'patio_sessions/cli'
-  autoload :RackApp, 'patio_sessions/rack_app'
-  autoload :RackInfo, 'patio_sessions/rack_info'
-  autoload :SessionsController, 'patio_sessions/sessions_controller'
+  class << self
+    def lib_path
+      root_path + 'lib'
+    end
+
+    def root_path
+      Pathname.new File.expand_path "#{File.dirname(__FILE__)}/.."
+    end
+
+    def setup_load_paths
+      $LOAD_PATH.unshift(root_path) unless $LOAD_PATH.include?(root_path)
+      $LOAD_PATH.unshift(lib_path) unless $LOAD_PATH.include?(lib_path)
+
+      Dir.glob("#{lib_path}/patio_sessions/**") do |path|
+        base = Pathname.new(path).basename.sub_ext''
+        autoload ActiveSupport::Inflector.camelize(base), path
+      end
+
+      VERSION # to force laoding this one
+    end
+  end
+
+  setup_load_paths
 end
