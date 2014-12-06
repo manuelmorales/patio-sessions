@@ -1,5 +1,5 @@
 module PatioSessions
-  class SessionsRepo
+  class SessionsMemoryRepo
     def find id
       store[id]
     end

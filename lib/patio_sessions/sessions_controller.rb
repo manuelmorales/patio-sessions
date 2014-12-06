@@ -11,14 +11,12 @@ module PatioSessions
         render
       end
 
-      def sessions_repo
-        @sessions_repo ||= Object.new.tap do |repo|
-          repo.instance_eval do
-            def find id
-              OpenStruct.new id: id
-            end
-          end
-        end
+      def self.sessions_repo
+        @sessions_repo || raise('No repo setup yet')
+      end
+
+      def self.sessions_repo= repo
+        @sessions_repo = repo
       end
 
       private
@@ -26,6 +24,10 @@ module PatioSessions
       def action
         session = sessions_repo.find(session_id)
         body id: session.id
+      end
+
+      def sessions_repo
+        self.class.sessions_repo
       end
 
       def session_id

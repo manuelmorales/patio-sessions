@@ -1,8 +1,8 @@
 require_relative '../spec_helper'
 
-RSpec.describe SessionsRepo do
+RSpec.describe SessionsMemoryRepo do
   subject { repo }
-  let(:repo) { SessionsRepo.new }
+  let(:repo) { SessionsMemoryRepo.new }
   let(:session) { Session.new }
 
   it 'can store and retrieve sessions by id' do

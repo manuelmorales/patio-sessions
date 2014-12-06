@@ -10,7 +10,23 @@ describe 'RackApp' do
 
   describe 'GET /sessions/:id' do
     let(:path) { "/sessions/#{session_id}" }
+
+    let(:sessions_repo) do 
+      SessionsMemoryRepo.new.tap do |r|
+        r.save session
+      end
+    end
+
+    let(:session) { Session.new id: session_id }
     let(:session_id) { 'a-session-id' }
+
+    before do
+      SessionsController::Show.sessions_repo = sessions_repo
+    end
+
+    before do
+      SessionsController::Show.sessions_repo = sessions_repo
+    end
 
     it 'routes /sessions/:id' do
       action = app.recognize :get, path

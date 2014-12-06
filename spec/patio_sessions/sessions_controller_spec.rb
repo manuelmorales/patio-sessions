@@ -4,11 +4,12 @@ describe SessionsController do
   context 'Show' do
     let(:path) { "/sessions/#{session_id}" }
     let(:session_id) { 'a-session-id' }
-    let(:session) { double('session', id: session_id) }
-    let(:sessions_repo) { double('sessions_repo', find: session) }
+    let(:session) { Session.new id: session_id }
+    let(:sessions_repo) { SessionsMemoryRepo.new }
 
     before do
-      allow(subject).to receive(:sessions_repo).and_return(sessions_repo)
+      SessionsController::Show.sessions_repo = sessions_repo
+      sessions_repo.save session
     end
 
     context 'Rack integration' do
