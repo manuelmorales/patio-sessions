@@ -1,6 +1,28 @@
 module PatioSessions
   class SessionsController
     class Show
+      NULL = Object.new
+
+      def self.not_found_exception value = NULL
+        if value == NULL
+          if block_given?
+            @not_found_exception = yield
+          else
+            @not_found_exception
+          end
+        else
+          if block_given?
+            raise("Both, block and value were given. I don't know which one to pick")
+          else
+            @not_found_exception = value
+          end
+        end
+      end
+
+      def not_found_exception
+        self.class.not_found_exception
+      end
+
       def self.call env
         new.call env
       end
@@ -10,8 +32,9 @@ module PatioSessions
         begin
           action
           render
-        rescue NotFoundError => e
-          body error_code: :not_found, error_message: e.message
+        rescue not_found_exception => e
+          message = "Could not find session with id #{e.id}"
+          body error_code: :not_found, error_message: message
           status 404
           render
         end
@@ -27,10 +50,8 @@ module PatioSessions
 
       private
 
-      NotFoundError = Class.new(StandardError)
-
       def action
-        session = sessions_repo.find(session_id) || raise(NotFoundError.new("Could not find session with id #{session_id}"))
+        session = sessions_repo.find(session_id)
         body id: session.id
       end
 
