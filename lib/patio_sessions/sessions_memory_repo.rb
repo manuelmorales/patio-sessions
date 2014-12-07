@@ -1,5 +1,6 @@
 module PatioSessions
   class SessionsMemoryRepo
+    require 'injectable'
     include Injectable
 
     attr_injectable :not_found_exception

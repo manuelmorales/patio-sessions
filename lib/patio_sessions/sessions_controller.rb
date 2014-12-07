@@ -1,7 +1,7 @@
-require 'injectable'
-
 module PatioSessions
   class SessionsController
+    require 'injectable'
+
     class Show
       include Injectable
       extend Forwardable

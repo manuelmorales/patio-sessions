@@ -7,6 +7,7 @@ module PatioSessions
       args = ['spec'] if args.empty?
 
       require_relative '../../spec/spec_helper'
+
       RSpec::Core::Runner.run(args)
     end
 
