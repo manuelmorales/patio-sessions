@@ -1,27 +1,13 @@
+require 'injectable'
+
 module PatioSessions
   class SessionsController
     class Show
-      NULL = Object.new
+      include Injectable
+      extend Forwardable
 
-      def self.not_found_exception value = NULL
-        if value == NULL
-          if block_given?
-            @not_found_exception = yield
-          else
-            @not_found_exception
-          end
-        else
-          if block_given?
-            raise("Both, block and value were given. I don't know which one to pick")
-          else
-            @not_found_exception = value
-          end
-        end
-      end
-
-      def not_found_exception
-        self.class.not_found_exception
-      end
+      cattr_injectable :not_found_exception
+      def_delegator :'self.class', :not_found_exception
 
       def self.call env
         new.call env
