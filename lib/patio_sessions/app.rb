@@ -5,7 +5,7 @@ module PatioSessions
     def actions
       @actions ||= Hashie::Mash.new.tap do |h|
         h.sessions!.show = SessionsController::Show
-        h.sessions!.show.sessions_repo = repos.sessions
+        h.sessions!.show.sessions_repo = Resolver.new { repos.sessions }
       end
     end
 

@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'lotus-model'
   s.add_dependency 'activesupport'
   s.add_dependency 'hashie'
+  s.add_dependency 'sourcify'
 
   s.add_development_dependency 'pry'
   s.add_development_dependency 'pry-byebug'
