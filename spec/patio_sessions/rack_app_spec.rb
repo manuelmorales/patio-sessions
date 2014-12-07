@@ -1,7 +1,8 @@
 require_relative '../rack_spec_helper'
 
-describe 'RackApp' do
-  let(:app){ App.new.rack }
+describe 'rack' do
+  let(:app){ patio_app.rack }
+  let(:patio_app) { App.new }
 
   it 'returns 404 for unknown paths' do
     get '/dasadsadda'
@@ -10,27 +11,18 @@ describe 'RackApp' do
 
   describe 'GET /sessions/:id' do
     let(:path) { "/sessions/#{session_id}" }
+    let(:action) { patio_app.actions.sessions.show }
 
-    let(:sessions_repo) do 
-      SessionsMemoryRepo.new.tap do |r|
-        r.save session
-      end
-    end
-
+    let(:sessions_repo) { SessionsMemoryRepo.new }
     let(:session) { Session.new id: session_id }
     let(:session_id) { 'a-session-id' }
 
     before do
-      SessionsController::Show.sessions_repo = sessions_repo
-    end
-
-    before do
-      SessionsController::Show.sessions_repo = sessions_repo
+      action.sessions_repo = sessions_repo
+      sessions_repo.save session
     end
 
     it 'routes /sessions/:id' do
-      action = app.recognize :get, path
-
       expect(action).to receive(:call) do |env|
         expect(env['router.params']).to eq(id: 'a-session-id')
         [200, {}, []]

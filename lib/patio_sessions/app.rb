@@ -16,7 +16,11 @@ module PatioSessions
     end
 
     def rack
-      RackApp
+      require 'lotus-router'
+      @rack ||= Lotus::Router.new.tap do |r|
+        r.get '/admin/info', to: RackInfo
+        r.get '/sessions/:id(.:format)', to: ->(env) { actions.sessions.show.call env }
+      end
     end
   end
 end

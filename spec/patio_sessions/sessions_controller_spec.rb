@@ -2,19 +2,22 @@ require_relative '../rack_spec_helper'
 
 describe SessionsController do
   context 'Show' do
+    let(:app){ patio_app.rack }
+    let(:patio_app) { App.new }
+
     let(:path) { "/sessions/#{session_id}" }
-    let(:session_id) { 'a-session-id' }
-    let(:session) { Session.new id: session_id }
+    let(:action) { patio_app.actions.sessions.show }
+
     let(:sessions_repo) { SessionsMemoryRepo.new }
+    let(:session) { Session.new id: session_id }
+    let(:session_id) { 'a-session-id' }
 
     before do
-      SessionsController::Show.sessions_repo = sessions_repo
+      action.sessions_repo = sessions_repo
       sessions_repo.save session
     end
 
     context 'Rack integration' do
-      let(:app){ App.new.rack }
-
       def do_request
         get path, {}, 'HTTP_ACCEPT' => 'application/json'
       end
