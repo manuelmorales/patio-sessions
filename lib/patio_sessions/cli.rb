@@ -25,7 +25,6 @@ module PatioSessions
       options = Rerun::Options.parse [
         '--background', 
         '--name', "./cli #{args.first}",
-        '-exit', 'false',
         '--signal', 'ABRT',
       ]
 
