@@ -22,6 +22,16 @@ describe 'rack' do
       sessions_repo.save session
     end
 
+    it 'calls app.actions.sessions.show' do
+      expect(patio_app.actions.sessions.show).to receive(:call).and_return([200, {}, []])
+      get path
+
+      new_action = double('action')
+      patio_app.actions.sessions.show = new_action
+      expect(new_action).to receive(:call).and_return([200, {}, []])
+      get path
+    end
+
     it 'routes /sessions/:id' do
       expect(action).to receive(:call) do |env|
         expect(env['router.params']).to eq(id: 'a-session-id')

@@ -19,7 +19,7 @@ module PatioSessions
       require 'lotus-router'
       @rack ||= Lotus::Router.new.tap do |r|
         r.get '/admin/info', to: RackInfo
-        r.get '/sessions/:id(.:format)', to: ->(env) { actions.sessions.show.call env }
+        r.get '/sessions/:id(.:format)', to: Resolver.new { actions.sessions.show }
       end
     end
   end
