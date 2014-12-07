@@ -8,28 +8,24 @@ module Injectable
   module ClassMethods
     def injectable name
       define_method name do |value = NULL, &block|
-        if value == NULL
-          if block
+        if block
+          if value == NULL || value == nil
             instance_variable_set("@#{name}_proc", block)
           else
-            instance_variable_get("@#{name}_proc").call
+            send("#{name}=", value)
           end
         else
-          if value == nil
-            if block
-              instance_variable_set("@#{name}_proc", block)
-            else
-              instance_variable_set("@#{name}_proc", lambda{ value })
-            end
+          if value == NULL
+            instance_variable_get("@#{name}_proc").call
           else
-            instance_variable_set("@#{name}_proc", lambda{ value })
+            send("#{name}=", value)
           end
-          value || block
         end
       end
 
-      define_method "#{name}=" do |value, &block|
+      define_method "#{name}=" do |value|
         instance_variable_set("@#{name}_proc", lambda{ value })
+        value
       end
     end
   end
