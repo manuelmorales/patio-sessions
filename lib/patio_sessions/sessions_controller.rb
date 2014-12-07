@@ -7,8 +7,14 @@ module PatioSessions
 
       def call env
         @env = env
-        action
-        render
+        begin
+          action
+          render
+        rescue NotFoundError => e
+          body error_code: :not_found, error_message: e.message
+          status 404
+          render
+        end
       end
 
       def self.sessions_repo
@@ -21,8 +27,10 @@ module PatioSessions
 
       private
 
+      NotFoundError = Class.new(StandardError)
+
       def action
-        session = sessions_repo.find(session_id)
+        session = sessions_repo.find(session_id) || raise(NotFoundError.new("Could not find session with id #{session_id}"))
         body id: session.id
       end
 

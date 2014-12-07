@@ -60,6 +60,23 @@ describe SessionsController do
           expect(JSON.parse last_response.body).to eq('id' => session_id)
         end
       end
+
+      context 'not found' do
+        let(:path) { '/sessions/INVALID-id' }
+
+        it 'returns status 404' do
+          do_request
+          expect(last_response.status).to eq 404
+        end
+
+        it 'renders the error' do
+          do_request
+          expect(JSON.parse last_response.body).to eq({
+            'error_code' => "not_found",
+            'error_message' => "Could not find session with id INVALID-id",
+          })
+        end
+      end
     end
   end
 end
