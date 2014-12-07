@@ -1,5 +1,4 @@
 require 'thor'
-require 'puma/cli'
 
 module PatioSessions
   class Cli < Thor
@@ -35,6 +34,7 @@ module PatioSessions
     desc 'start', 'runs the HTTP server'
     def start
       invoke :environment
+      require 'puma/cli'
       Puma::CLI.new([]).run
     end
 

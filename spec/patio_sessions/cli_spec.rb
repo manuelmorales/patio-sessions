@@ -1,5 +1,7 @@
 require_relative '../spec_helper'
 require 'rerun'
+require 'puma/cli'
+require 'pry'
 
 describe Cli do
   let(:cli){ Cli.new }

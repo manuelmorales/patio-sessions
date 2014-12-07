@@ -19,23 +19,6 @@ RSpec.describe Resolver do
     subject.a_method
   end
 
-  it 'has a meaningful inspect' do
-    target_class = Class.new do
-      def inspect
-        '#<AnInstance>'
-      end
-
-      def get_resolver
-        Resolver.new { 37 }
-      end
-    end
-
-    target = target_class.new
-    subject = target.get_resolver
-
-    expect(subject.inspect).to eq('proc { 37 } @ #<AnInstance>')
-  end
-
   it '#resolver_bound returns the object owner of the binding' do
     subject = Resolver.new { 2 + 2 }
     expect(subject.resolver_bound).to eq self
