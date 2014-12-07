@@ -18,9 +18,18 @@ module PatioSessions
       Pry.start PatioSessions
     end
 
-    desc 'autotest', ''
-    def autotest
-      system('bundle exec guard')
+    desc 'auto [COMMAND]', 're-runs the given command on any file change'
+    def auto *args
+      require 'rerun'
+
+      options = Rerun::Options.parse [
+        '--background', 
+        '--name', "./cli #{args.first}",
+        '-exit', 'false',
+        '--signal', 'ABRT',
+      ]
+
+      Rerun::Runner.keep_running("./cli #{args.join " "}", options)
     end
 
     desc 'start', 'runs the HTTP server'

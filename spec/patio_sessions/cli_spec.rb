@@ -1,4 +1,5 @@
 require_relative '../spec_helper'
+require 'rerun'
 
 describe Cli do
   let(:cli){ Cli.new }
@@ -31,6 +32,15 @@ describe Cli do
     it 'runs a Puma server' do
       expect_any_instance_of(Puma::CLI).to receive(:run)
       cli.start
+    end
+  end
+
+  describe '#auto' do
+    it 'launches rerun with the given command' do
+      expect(Rerun::Runner).to receive(:keep_running) do |command, options|
+        expect(command).to eq './cli sample command'
+      end
+      cli.auto 'sample command'
     end
   end
 end
