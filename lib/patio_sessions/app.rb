@@ -1,6 +1,10 @@
 require 'hashie' 
 module PatioSessions
   class AppBase
+    def initialize &block
+      instance_exec self, &block if block
+    end
+
     def let name, &block
       define_singleton_method "#{name}=" do |value|
         eval "@#{name} = value"
@@ -13,7 +17,7 @@ module PatioSessions
 
     def section name, &block
       let name do
-        self.class.new.tap { |a| block.call a }
+        self.class.new.tap {|a| a.send(:instance_exec, a, &block) }
       end
     end
 
@@ -49,17 +53,15 @@ module PatioSessions
 
   class App
     def self.new
-      app = AppBase.new
-
-      app.section :repos do |repos|
-        repos.let :sessions do
-          SessionsMemoryRepo.new.tap do |r|
-            r.not_found_exception { app.exceptions.not_found }
+      AppBase.new do |app|
+        section :repos do
+          let :sessions do
+            SessionsMemoryRepo.new do
+              not_found_exception { app.exceptions.not_found }
+            end
           end
         end
       end
-
-      app
     end
   end
 end

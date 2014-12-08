@@ -1,6 +1,11 @@
 module Injectable
   NULL = Object.new
 
+  def initialize &block
+    super
+    instance_exec self, &block if block
+  end
+
   def self.included klass
     klass.extend self
   end
