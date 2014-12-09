@@ -9,6 +9,9 @@ module PatioSessions
       cattr_injectable :not_found_exception
       def_delegator :'self.class', :not_found_exception
 
+      cattr_injectable :sessions_repo
+      def_delegator :'self.class', :sessions_repo
+
       def self.call env
         new.call env
       end
@@ -26,23 +29,11 @@ module PatioSessions
         end
       end
 
-      def self.sessions_repo
-        @sessions_repo || raise('No repo setup yet')
-      end
-
-      def self.sessions_repo= repo
-        @sessions_repo = repo
-      end
-
       private
 
       def action
         session = sessions_repo.find(session_id)
         body id: session.id
-      end
-
-      def sessions_repo
-        self.class.sessions_repo
       end
 
       def session_id

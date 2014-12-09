@@ -11,42 +11,13 @@ module PatioSessions
       end
 
       define_singleton_method name do
-        eval "@#{name} ||= block.call"
+        eval "defined?(@#{name}) ? @#{name} : @#{name} = block.call"
       end
     end
 
     def section name, &block
       let name do
         self.class.new.tap {|a| a.send(:instance_exec, a, &block) }
-      end
-    end
-
-    def actions
-      @actions ||= Hashie::Mash.new.tap do |h|
-        h.sessions!.show = SessionsController::Show
-        h.sessions!.show.sessions_repo = Resolver.new { repos.sessions }
-        h.sessions!.show.not_found_exception { exceptions.not_found }
-      end
-    end
-
-    def rack
-      require 'lotus-router'
-      @rack ||= Lotus::Router.new.tap do |r|
-        r.get '/admin/info', to: RackInfo
-        r.get '/sessions/:id(.:format)', to: Resolver.new { actions.sessions.show }
-      end
-    end
-
-    def exceptions
-      @exceptions ||= Hashie::Mash.new.tap do |h|
-        h.not_found = Class.new(StandardError) do
-          attr_accessor :id
-
-          def initialize msg, attrs = {}
-            super msg
-            attrs.each { |k, v| send("#{k}=", v) }
-          end
-        end
       end
     end
   end
@@ -58,6 +29,38 @@ module PatioSessions
           let :sessions do
             SessionsMemoryRepo.new do
               not_found_exception { app.exceptions.not_found }
+            end
+          end
+        end
+
+        section :actions do
+          section :sessions do
+            let :show do
+              SessionsController::Show.tap do |a|
+                a.sessions_repo { app.repos.sessions }
+                a.not_found_exception { app.exceptions.not_found }
+              end
+            end
+          end
+        end
+
+        let :rack do
+          require 'lotus-router'
+          Lotus::Router.new.tap do |r|
+            r.get '/admin/info', to: RackInfo
+            r.get '/sessions/:id(.:format)', to: Resolver.new { actions.sessions.show }
+          end
+        end
+
+        section :exceptions do
+          let :not_found do
+            Class.new(StandardError) do
+              attr_accessor :id
+
+              def initialize msg, attrs = {}
+                super msg
+                attrs.each { |k, v| send("#{k}=", v) }
+              end
             end
           end
         end
