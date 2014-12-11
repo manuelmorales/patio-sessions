@@ -1,6 +1,8 @@
 require 'hashie' 
 module PatioSessions
   class AppBase
+    attr_accessor :root
+
     def initialize &block
       instance_exec self, &block if block
     end
@@ -11,7 +13,7 @@ module PatioSessions
       end
 
       define_singleton_method name do
-        eval "defined?(@#{name}) ? @#{name} : @#{name} = block.call"
+        eval "defined?(@#{name}) ? @#{name} : @#{name} = block.call(self)"
       end
     end
 
@@ -19,14 +21,24 @@ module PatioSessions
       block = Proc.new{ self.class.new } unless block
 
       let name do
-        self.class.new.tap {|a| a.send(:instance_exec, a, &block) }
+        self.class.new.tap do |a|
+          a.root = root || self
+          a.send(:instance_exec, a, &block)
+        end
       end
     end
 
     def from_hash hash
       hash.each do |k,v|
-        section k
-        send(k).from_hash v
+        case v
+        when Hash then
+          section k
+          send(k).from_hash v
+        when String then 
+          section(k){ eval File.read v }
+        else
+          raise
+        end
       end
     end
   end
@@ -36,26 +48,13 @@ module PatioSessions
       AppBase.new do |app|
         from_hash(
           {
-            :repos => {},
+            :repos => 'config/app/repos.rb',
             :actions => {
-              :sessions => {},
+              :sessions => 'config/app/actions/sessions.rb',
             },
             :exceptions => {},
           }
         )
-
-        repos.let :sessions do 
-          SessionsMemoryRepo.new do
-            not_found_exception { app.exceptions.not_found }
-          end
-        end
-
-        actions.sessions.let :show do
-          SessionsController::Show.tap do |a|
-            a.sessions_repo { app.repos.sessions }
-            a.not_found_exception { app.exceptions.not_found }
-          end
-        end
 
         exceptions.let :not_found do
           Class.new(StandardError) do
