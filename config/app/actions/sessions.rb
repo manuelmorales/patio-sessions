@@ -1,8 +1,8 @@
-root = self.root
-
-let :show do
-  SessionsController::Show.tap do |a|
-    a.sessions_repo { root.repos.sessions }
-    a.not_found_exception { root.exceptions.not_found }
+AppBase.new.tap do |sessions|
+  sessions.let :show do
+    SessionsController::Show.tap do |a|
+      a.sessions_repo { app.repos.sessions }
+      a.not_found_exception { app.exceptions.not_found }
+    end
   end
 end

@@ -48,13 +48,17 @@ module PatioSessions
       AppBase.new do |app|
         from_hash(
           {
-            :repos => 'config/app/repos.rb',
-            :actions => {
-              :sessions => 'config/app/actions/sessions.rb',
-            },
             :exceptions => {},
           }
         )
+
+        app.let(:actions) do
+          AppBase.new.tap do |actions|
+            actions.let(:sessions) { eval File.read 'config/app/actions/sessions.rb' }
+          end
+        end
+
+        app.let(:repos) { eval File.read 'config/app/repos.rb' }
 
         exceptions.let :not_found do
           Class.new(StandardError) do
