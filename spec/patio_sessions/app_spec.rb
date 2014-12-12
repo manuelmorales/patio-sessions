@@ -33,8 +33,8 @@ RSpec.describe App do
     end
   end
 
-  describe 'AppBase' do
-    let(:subject_class) { AppBase }
+  describe 'Section' do
+    let(:subject_class) { Section }
 
     describe 'let' do
       it 'provides a getter and setter' do

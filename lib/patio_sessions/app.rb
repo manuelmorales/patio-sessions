@@ -1,7 +1,8 @@
 require 'hashie' 
 module PatioSessions
-  class AppBase
+  class Section
     attr_accessor :root
+    attr_accessor :name
 
     def initialize &block
       instance_exec self, &block if block
@@ -21,21 +22,8 @@ module PatioSessions
       let name do
         self.class.new.tap do |a|
           a.root = root || self
+          a.name = name
           block.call a if block
-        end
-      end
-    end
-
-    def from_hash hash
-      hash.each do |k,v|
-        case v
-        when Hash then
-          section k
-          send(k).from_hash v
-        when String then 
-          section(k){ eval File.read v }
-        else
-          raise
         end
       end
     end
@@ -43,19 +31,17 @@ module PatioSessions
     def eval_file path
       eval File.read(path)
     end
+
+    def inspect
+      "#<section:#{name}>"
+    end
   end
 
-  class App < AppBase
+  class App < Section
     def self.new
-      AppBase.new do |root|
-        from_hash(
-          {
-            :exceptions => {},
-          }
-        )
-
+      Section.new do |root|
         root.section :actions do |actions|
-          actions.section(:sessions) do |sessions|
+          actions.section :sessions do |sessions|
             sessions.eval_file 'config/app/actions/sessions.rb'
           end
         end
@@ -64,24 +50,11 @@ module PatioSessions
           repos.eval_file 'config/app/repos.rb'
         end
 
-        exceptions.let :not_found do
-          Class.new(StandardError) do
-            attr_accessor :id
-
-            def initialize msg, attrs = {}
-              super msg
-              attrs.each { |k, v| send("#{k}=", v) }
-            end
-          end
+        root.section :exceptions do |exceptions|
+          exceptions.eval_file 'config/app/exceptions.rb'
         end
 
-        let :rack do
-          require 'lotus-router'
-          Lotus::Router.new.tap do |r|
-            r.get '/admin/info', to: RackInfo
-            r.get '/sessions/:id(.:format)', to: Resolver.new { root.actions.sessions.show }
-          end
-        end
+        root.eval_file 'config/app/rack.rb'
       end
     end
   end
