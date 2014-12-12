@@ -1,5 +1,5 @@
-repos.let :sessions  do
-  SessionsMemoryRepo.new do
-    not_found_exception { app.exceptions.not_found }
+let :sessions  do
+  SessionsMemoryRepo.new do |r|
+    r.not_found_exception { root.exceptions.not_found }
   end
 end

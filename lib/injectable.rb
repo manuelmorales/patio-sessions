@@ -3,7 +3,7 @@ module Injectable
 
   def initialize &block
     super
-    instance_exec self, &block if block
+    block.call self if block
   end
 
   def self.included klass

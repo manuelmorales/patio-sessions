@@ -39,25 +39,29 @@ module PatioSessions
         end
       end
     end
+
+    def eval_file path
+      eval File.read(path)
+    end
   end
 
   class App < AppBase
     def self.new
-      AppBase.new do |app|
+      AppBase.new do |root|
         from_hash(
           {
             :exceptions => {},
           }
         )
 
-        app.section(:actions) do |actions|
+        root.section :actions do |actions|
           actions.section(:sessions) do |sessions|
-            eval File.read 'config/app/actions/sessions.rb'
+            sessions.eval_file 'config/app/actions/sessions.rb'
           end
         end
 
-        app.section(:repos) do |repos|
-          eval File.read 'config/app/repos.rb'
+        root.section :repos do |repos|
+          repos.eval_file 'config/app/repos.rb'
         end
 
         exceptions.let :not_found do
@@ -75,7 +79,7 @@ module PatioSessions
           require 'lotus-router'
           Lotus::Router.new.tap do |r|
             r.get '/admin/info', to: RackInfo
-            r.get '/sessions/:id(.:format)', to: Resolver.new { app.actions.sessions.show }
+            r.get '/sessions/:id(.:format)', to: Resolver.new { root.actions.sessions.show }
           end
         end
       end
