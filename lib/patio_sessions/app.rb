@@ -18,12 +18,10 @@ module PatioSessions
     end
 
     def section name, &block
-      block = Proc.new{ self.class.new } unless block
-
       let name do
         self.class.new.tap do |a|
           a.root = root || self
-          a.send(:instance_exec, a, &block)
+          block.call a if block
         end
       end
     end
@@ -52,13 +50,15 @@ module PatioSessions
           }
         )
 
-        app.let(:actions) do
-          AppBase.new.tap do |actions|
-            actions.let(:sessions) { eval File.read 'config/app/actions/sessions.rb' }
+        app.section(:actions) do |actions|
+          actions.section(:sessions) do |sessions|
+            eval File.read 'config/app/actions/sessions.rb'
           end
         end
 
-        app.let(:repos) { eval File.read 'config/app/repos.rb' }
+        app.section(:repos) do |repos|
+          eval File.read 'config/app/repos.rb'
+        end
 
         exceptions.let :not_found do
           Class.new(StandardError) do
