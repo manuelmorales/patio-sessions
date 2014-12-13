@@ -29,7 +29,13 @@ class Section
   end
 
   def inspect
-    "#<#{self.class.name}: #{name} >"
+    "#<#{name}:#{class_name}:0x#{'%x' % (object_id << 1)}>"
+  end
+
+  private
+
+  def class_name
+    self.class.name || self.class.ancestors.detect(&:name).name
   end
 end
 
