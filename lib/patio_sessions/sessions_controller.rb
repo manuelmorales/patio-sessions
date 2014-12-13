@@ -72,31 +72,95 @@ module PatioSessions
       end
     end
 
-    class Update
-      include Injectable
-      extend Forwardable
+    module Base
+      module ClassMethods
+        def call env
+          new.call env
+        end
+      end
 
-      cattr_injectable :sessions_repo
-      def_delegator :'self.class', :sessions_repo
+      def self.included klass
+        klass.class_eval do
+          extend ClassMethods
 
-      def self.call env
-        new.call env
+          include Injectable
+          extend Forwardable
+
+          cattr_injectable :sessions_repo
+          def_delegator :'self.class', :sessions_repo
+        end
       end
 
       def call env
-        @env = env
-        sessions_repo.save Session.new(id: session_id)
-        [200, {}, []]
+        raise NotImplementedError.new
       end
 
       private
+
+      def action
+        raise NotImplementedError.new
+      end
 
       def session_id
         env['router.params'][:id]
       end
 
+      NULL = Object.new
+
+      def body value = NULL
+        if value == NULL
+          @body
+        else
+          @body = value
+        end
+      end
+
+      def header key, value = NULL
+        if value == NULL
+          headers[key]
+        else
+          headers[key] = value
+        end
+      end
+
+      def headers
+        @headers ||= {}
+      end
+
+      def status value = NULL
+        if value == NULL
+          @status ||= 200
+        else
+          @status = value
+        end
+      end
+
+      def render
+        [status, headers, [body && body.to_json]]
+      end
+
       def env
         @env
+      end
+    end
+
+    class Update
+      include Base
+
+      def call env
+        @env = env
+        action
+        render
+      end
+
+      private
+
+      def action
+        sessions_repo.save Session.new(id: session_id)
+      end
+
+      def session_id
+        env['router.params'][:id]
       end
     end
   end
