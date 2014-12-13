@@ -20,6 +20,10 @@ module PatioSessions
         end
 
         root.eval_file 'config/app/rack.rb'
+
+        root.section :serializers do |serializers|
+          serializers.eval_file 'config/app/serializers.rb'
+        end
       end
     end
   end

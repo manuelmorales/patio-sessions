@@ -5,8 +5,9 @@ module PatioSessions
     class Show
       include Injectable
 
-      attr_accessor :not_found_exception
-      attr_accessor :sessions_repo
+      attr_injectable :not_found_exception
+      attr_injectable :sessions_repo
+      attr_injectable :serializer
 
       def call env
         @env = env
@@ -25,19 +26,7 @@ module PatioSessions
 
       def action
         session = sessions_repo.find(session_id)
-        body session_serializer.serialize(session)
-      end
-
-      def session_serializer
-        Object.new.tap do |o|
-          o.instance_eval do
-            def serialize session
-              {
-                :id => session.id,
-              }
-            end
-          end
-        end
+        body serializer.session(session)
       end
 
       def session_id

@@ -20,7 +20,9 @@ module Injectable
         end
       else
         if value == NULL
-          instance_variable_get("@#{name}_proc").call
+          p = instance_variable_get("@#{name}_proc")
+          p || raise("No #{name} defined yet for #{inspect}")
+          p.call
         else
           send("#{name}=", value)
         end
