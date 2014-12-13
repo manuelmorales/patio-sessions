@@ -1,6 +1,11 @@
 module Injectable
   NULL = Object.new
 
+  def initialize &block
+    super
+    block.call self if block
+  end
+
   def self.included klass
     klass.extend self
   end
@@ -15,7 +20,9 @@ module Injectable
         end
       else
         if value == NULL
-          instance_variable_get("@#{name}_proc").call
+          p = instance_variable_get("@#{name}_proc")
+          p || raise("No #{name} defined yet for #{inspect}")
+          p.call
         else
           send("#{name}=", value)
         end
@@ -38,5 +45,15 @@ module Injectable
   def attr_injectable name
     define_method name, &Injectable.getsetter_definition_for(name)
     define_method "#{name}=", &Injectable.setter_definition_for(name)
+  end
+
+  def let name, &block
+    define_singleton_method "#{name}=" do |value|
+      eval "@#{name} = value"
+    end
+
+    define_singleton_method name do
+      eval "defined?(@#{name}) ? @#{name} : @#{name} = block.call(self)"
+    end
   end
 end

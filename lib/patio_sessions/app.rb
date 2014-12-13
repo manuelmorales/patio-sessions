@@ -1,39 +1,28 @@
-require 'hashie'
+require 'hashie' 
+require 'section'
 
 module PatioSessions
-  class App
-    def actions
-      @actions ||= Hashie::Mash.new.tap do |h|
-        h.sessions!.show = SessionsController::Show
-        h.sessions!.show.sessions_repo = Resolver.new { repos.sessions }
-        h.sessions!.show.not_found_exception { exceptions.not_found }
-      end
-    end
-
-    def repos
-      @repos ||= Hashie::Mash.new.tap do |h|
-        h.sessions = SessionsMemoryRepo.new
-        h.sessions.not_found_exception { exceptions.not_found }
-      end
-    end
-
-    def rack
-      require 'lotus-router'
-      @rack ||= Lotus::Router.new.tap do |r|
-        r.get '/admin/info', to: RackInfo
-        r.get '/sessions/:id(.:format)', to: Resolver.new { actions.sessions.show }
-      end
-    end
-
-    def exceptions
-      @exceptions ||= Hashie::Mash.new.tap do |h|
-        h.not_found = Class.new(StandardError) do
-          attr_accessor :id
-
-          def initialize msg, attrs = {}
-            super msg
-            attrs.each { |k, v| send("#{k}=", v) }
+  class App < Section
+    def self.new
+      Section.new name: 'app' do |root|
+        root.section :actions do |actions|
+          actions.section :sessions do |sessions|
+            sessions.eval_file 'config/app/actions/sessions.rb'
           end
+        end
+
+        root.section :repos do |repos|
+          repos.eval_file 'config/app/repos.rb'
+        end
+
+        root.section :exceptions do |exceptions|
+          exceptions.eval_file 'config/app/exceptions.rb'
+        end
+
+        root.eval_file 'config/app/rack.rb'
+
+        root.section :serializers do |serializers|
+          serializers.eval_file 'config/app/serializers.rb'
         end
       end
     end
