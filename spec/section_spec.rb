@@ -78,16 +78,17 @@ describe Section do
 
   describe '#eval_file' do
     it 'is executed in the scope of the object itself' do
-      Tempfile.new 'test' do |file|
-        file.write <<-FILE
-        section(:my_section) do
-          let(:value) { root.object_id }
+      file = Tempfile.new 'test'
+      file.write <<-FILE
+        section(:my_section) do |sec|
+          sec.let(:value) { object_id }
         end
-        FILE
+      FILE
+      file.close
 
-        subject.eval_file file.path
-        expect(subject.my_section.value).to eq subject.object_id
-      end
+      subject.eval_file file.path
+
+      expect(subject.my_section.value).to eq subject.object_id
     end
   end
 
@@ -108,7 +109,57 @@ describe Section do
   end
 
   describe 'module including' do
-    it 'is accessible within sections'
-    it 'is accessible within let'
+    let(:my_module) do
+      Module.new.tap do |m|
+        m::MY_CONSTANT = 37
+
+        m.class_eval do
+          def my_method
+            'hi'
+          end
+        end
+      end
+    end
+
+    let(:my_class) do
+      Class.new(Section).tap do |k|
+        k.send(:include, my_module)
+      end
+    end
+
+    subject { my_class.new }
+
+    it 'is accessible within sections and lets' do
+      subject.section(:one) do |one|
+        expect(one.my_method).to eq 'hi'
+
+        one.let(:two) { one.my_method }
+      end
+
+      expect(subject.one.two).to eq 'hi'
+    end
+
+    it 'is accessible with file_eval' do
+      file = Tempfile.new 'test'
+      file.write <<-FILE
+        my_method
+        MY_CONSTANT
+
+        section(:one) do |one|
+          my_method
+          MY_CONSTANT
+
+          one.let(:two) do
+            MY_CONSTANT
+            my_method
+          end
+        end
+      FILE
+      file.close
+
+      subject.eval_file file.path
+
+      expect(subject.one.two).to eq 'hi'
+    end
   end
 end

@@ -7,6 +7,8 @@ class Section
   attr_accessor :name
 
   def initialize opts ={}, &block
+    super()
+
     opts.each do |k,v|
       send "#{k}=", v
     end
@@ -25,7 +27,7 @@ class Section
   end
 
   def eval_file path
-    eval File.read(path), binding, path
+    instance_eval File.read(path), path
   end
 
   def inspect

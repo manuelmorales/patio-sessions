@@ -3,8 +3,12 @@ require 'section'
 
 module PatioSessions
   class App < Section
+    class AppSection < Section
+      include PatioSessions
+    end
+
     def self.new
-      Section.new name: 'app' do |root|
+      AppSection.new name: 'app' do |root|
         root.section :actions do |actions|
           actions.section :sessions do |sessions|
             sessions.eval_file 'config/app/actions/sessions.rb'
@@ -28,3 +32,4 @@ module PatioSessions
     end
   end
 end
+
