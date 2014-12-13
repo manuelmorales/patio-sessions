@@ -9,11 +9,7 @@ RSpec.describe App do
       let(:actions) { subject.actions.sessions }
 
       describe 'show' do
-        it 'is a SessionsController::Show' do
-          expect(actions.show).to eq SessionsController::Show
-        end
-
-        it 'has resolves the sessions repo' do
+        it 'resolves the sessions repo' do
           expect(actions.show.sessions_repo).to eq subject.repos.sessions
 
           new_repo = double('new_sessions_repo')
