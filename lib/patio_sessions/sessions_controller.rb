@@ -71,6 +71,35 @@ module PatioSessions
         @env
       end
     end
+
+    class Update
+      include Injectable
+      extend Forwardable
+
+      cattr_injectable :sessions_repo
+      def_delegator :'self.class', :sessions_repo
+
+      def self.call env
+        new.call env
+      end
+
+      def call env
+        @env = env
+        sessions_repo.save Session.new(id: session_id)
+        [200, {}, []]
+      end
+
+      private
+
+      def session_id
+        env['router.params'][:id]
+      end
+
+      def env
+        @env
+      end
+    end
   end
 end
+
 

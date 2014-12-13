@@ -27,3 +27,10 @@ let :show do
 
   factory
 end
+
+let :update do
+  Class.new(SessionsController::Update).tap do |action|
+    action.sessions_repo { root.repos.sessions }
+  end
+end
+

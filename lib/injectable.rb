@@ -49,11 +49,11 @@ module Injectable
 
   def let name, &block
     define_singleton_method "#{name}=" do |value|
-      eval "@#{name} = value"
+      instance_eval "@#{name} = value"
     end
 
     define_singleton_method name do
-      eval "defined?(@#{name}) ? @#{name} : @#{name} = block.call(self)"
+      instance_eval "defined?(@#{name}) ? @#{name} : @#{name} = block.call(self)"
     end
   end
 end
