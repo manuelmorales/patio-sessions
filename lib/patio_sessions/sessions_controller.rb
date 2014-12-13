@@ -2,24 +2,6 @@ module PatioSessions
   class SessionsController
     require 'injectable'
 
-    class ActionFactory
-      include Injectable
-
-      attr_injectable :not_found_exception
-      attr_injectable :sessions_repo
-
-      def initialize klass
-        @klass = klass
-      end
-
-      def call env
-        @klass.new.tap do |instance|
-          instance.not_found_exception = not_found_exception
-          instance.sessions_repo = sessions_repo
-        end.call env
-      end
-    end
-
     class Show
       include Injectable
 
