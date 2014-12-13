@@ -1,45 +1,10 @@
 require 'hashie' 
+require 'section'
+
 module PatioSessions
-  class Section
-    attr_accessor :root
-    attr_accessor :name
-
-    def initialize &block
-      instance_exec self, &block if block
-    end
-
-    def let name, &block
-      define_singleton_method "#{name}=" do |value|
-        eval "@#{name} = value"
-      end
-
-      define_singleton_method name do
-        eval "defined?(@#{name}) ? @#{name} : @#{name} = block.call(self)"
-      end
-    end
-
-    def section name, &block
-      let name do
-        self.class.new.tap do |a|
-          a.root = root || self
-          a.name = name
-          block.call a if block
-        end
-      end
-    end
-
-    def eval_file path
-      eval File.read(path)
-    end
-
-    def inspect
-      "#<section:#{name}>"
-    end
-  end
-
   class App < Section
     def self.new
-      Section.new do |root|
+      Section.new name: 'app' do |root|
         root.section :actions do |actions|
           actions.section :sessions do |sessions|
             sessions.eval_file 'config/app/actions/sessions.rb'
