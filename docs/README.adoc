@@ -1,0 +1,40 @@
+== Patio Sessions
+
+A sandbox sessions microservice.
+Not for real use.
+
+The intention of this microservice is to explore object oriented design ideas like 
+single responsibility principle, inversion of control, duck typing and friends.
+This is all just experiments, expect the design to be cumbersome and brittle.
+
+
+=== Getting Started
+
+[source,bash]
+----
+git clone git@github.org:manuelmorales/patio-sessions.git
+cd patio-sessions
+bundle install
+./cli # to show help
+----
+
+.seqdiag example
+["seqdiag",target="seqdiag-1"]
+---------------------------------------------------------------------
+{
+  // edge label
+  A -> B [label = "call"];
+  A <- B [label = "return"];
+
+  // diagonal edge
+  A -> B [diagonal, label = "diagonal edge"];
+  A <- B [diagonal, label = "return diagonal edge"];
+}
+---------------------------------------------------------------------
+
+=== License
+
+This software is released under the http://www.opensource.org/licenses/MIT[MIT License].
+Please see link:LICENSE.txt[LICENSE] for further details.
+
+Copyright (c) 2014 Manuel Morales.

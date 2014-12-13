@@ -25,4 +25,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rerun'
   s.add_development_dependency 'rspec'
   s.add_development_dependency 'rack-test'
+  s.add_development_dependency 'asciidoctor'
+  s.add_development_dependency 'asciidoctor-diagram'
 end

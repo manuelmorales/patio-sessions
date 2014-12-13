@@ -2,3 +2,7 @@ Gemfile.lock
 .rspec
 tags
 TAGS
+docs/*html
+docs/*png
+docs/*cache
+
