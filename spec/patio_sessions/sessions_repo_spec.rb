@@ -20,4 +20,49 @@ RSpec.describe SessionsRepo do
       end
     end
   end
+
+  it 'save() and find() by id' do
+    session = Session.new id: 'session-id', content: { user_id: 'user-id' }
+    expect{ subject.find('session-id') }.to raise_exception
+
+    subject.save session
+    result = subject.find 'session-id'
+
+    expect(result.id).to eq 'session-id'
+    expect(result.content[:user_id]).to eq 'user-id'
+  end
+
+  describe 'with redis store' do
+    let(:redis_store) { {} }
+    let(:subject) do
+      patio_app.repos.sessions.tap do |r|
+        r.store = Inline.new do
+          def redis
+            require 'redis'
+            @redis ||= Redis.new
+          end
+
+          def [] key
+            result = redis.get key
+            Marshal.load result if result
+          end
+
+          def []= key, value
+            redis.set key, Marshal.dump(value)
+          end
+        end
+      end
+    end
+
+    it 'save() and find() by id' do
+      session = Session.new id: 'session-id', content: { user_id: 'user-id' }
+      expect{ subject.find('session-id') }.to raise_exception
+
+      subject.save session
+      result = subject.find 'session-id'
+
+      expect(result.id).to eq 'session-id'
+      expect(result.content[:user_id]).to eq 'user-id'
+    end
+  end
 end
