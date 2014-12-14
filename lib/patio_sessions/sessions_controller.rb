@@ -66,7 +66,7 @@ module PatioSessions
       end
 
       def render
-        [status, headers, [body && body.to_json]]
+        [status, headers, [body && body.to_json].compact]
       end
 
       def env
