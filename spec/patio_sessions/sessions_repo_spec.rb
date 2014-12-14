@@ -1,6 +1,6 @@
 require_relative '../spec_helper'
 
-RSpec.describe SessionsMemoryRepo do
+RSpec.describe SessionsRepo do
   def subject
     patio_app.repos.sessions
   end

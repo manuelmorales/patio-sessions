@@ -13,13 +13,11 @@ describe 'rack' do
     let(:path) { "/sessions/#{session_id}" }
     let(:action) { patio_app.actions.sessions.show }
 
-    let(:sessions_repo) { SessionsMemoryRepo.new }
     let(:session) { Session.new id: session_id }
     let(:session_id) { 'a-session-id' }
 
     before do
-      action.sessions_repo = sessions_repo
-      sessions_repo.save session
+      action.sessions_repo.save session
     end
 
     it 'calls app.actions.sessions.show' do

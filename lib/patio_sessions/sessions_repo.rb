@@ -1,5 +1,5 @@
 module PatioSessions
-  class SessionsMemoryRepo
+  class SessionsRepo
     require 'injectable'
     include Injectable
 

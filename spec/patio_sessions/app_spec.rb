@@ -20,15 +20,6 @@ RSpec.describe App do
     end
   end
 
-
-  describe 'repos' do
-    describe 'sessions' do
-      it 'has a sessions repo' do
-        expect(subject.repos.sessions).to be_an_instance_of(SessionsMemoryRepo)
-      end
-    end
-  end
-
   describe 'Section' do
     let(:subject_class) { Section }
 
