@@ -8,7 +8,7 @@ describe SessionsController do
     let(:path) { "/sessions/#{session_id}" }
     let(:action) { patio_app.actions.sessions.show }
 
-    let(:session) { Session.new id: session_id }
+    let(:session) { Session.new id: session_id, content: {user_id: 37} }
     let(:session_id) { 'a-session-id' }
 
     before do
@@ -55,7 +55,10 @@ describe SessionsController do
 
         it 'renders the session from the session repository' do
           do_request
-          expect(JSON.parse last_response.body).to eq('id' => session_id)
+          expect(JSON.parse last_response.body, symbolize_names: true).to eq({
+            :id => session_id,
+            :content => {user_id: 37},
+          })
         end
       end
 
