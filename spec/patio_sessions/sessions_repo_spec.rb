@@ -37,10 +37,9 @@ RSpec.describe SessionsRepo do
     let(:subject) do
       patio_app.repos.sessions.tap do |r|
         r.store = Inline.new do
-          def redis
-            require 'redis'
-            @redis ||= Redis.new
-          end
+          cattr_injectable :redis
+
+          redis { Lazy.new { Redis.new } }
 
           def [] key
             result = redis.get key
@@ -52,6 +51,11 @@ RSpec.describe SessionsRepo do
           end
         end
       end
+    end
+
+    before :each do
+      require 'redis'
+      Redis.new.flushdb
     end
 
     it 'save() and find() by id' do
