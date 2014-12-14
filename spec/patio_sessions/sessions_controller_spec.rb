@@ -86,9 +86,17 @@ describe SessionsController do
     let(:action) { patio_app.actions.sessions.update }
 
     let(:session_id) { 'a-session-id' }
+    let(:content) { {user_id: 37} }
 
     def do_request
-      put path, {}, 'HTTP_ACCEPT' => 'application/json'
+      put(
+        path, 
+        content.to_json,
+        {
+          'HTTP_ACCEPT' => 'application/json',
+          'Content-Type' => 'application/json',
+        }
+      )
     end
 
 
@@ -126,6 +134,7 @@ describe SessionsController do
       it 'stores a new session in the repo' do
         expect(action.sessions_repo).to receive(:save) do |session|
           expect(session.id).to eq session_id
+          expect(session.content).to eq content
         end
 
         do_request
