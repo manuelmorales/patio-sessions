@@ -66,7 +66,7 @@ module PatioSessions
       end
 
       def render
-        [status, headers, [body && body.to_json]]
+        [status, headers, [body && body.to_json].compact]
       end
 
       def env
@@ -122,7 +122,17 @@ module PatioSessions
       private
 
       def action
-        sessions_repo.save Session.new(id: session_id)
+        sessions_repo.save Session.new(id: session_id, content: content_from_body)
+      end
+
+      def content_from_body
+        if request_body && request_body.length > 0
+          JSON.parse(request_body, symbolize_names: true)
+        end
+      end
+
+      def request_body
+        @request_body ||= env['rack.input'].read
       end
 
       def session_id

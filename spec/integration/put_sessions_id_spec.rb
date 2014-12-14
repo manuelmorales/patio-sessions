@@ -6,7 +6,6 @@ describe 'integration' do
 
   describe 'GET /sessions/:id' do
     let(:path) { "/sessions/#{session_id}" }
-    let(:session) { Session.new id: session_id }
     let(:session_id) { 'a-session-id' }
 
     def do_get
@@ -14,7 +13,7 @@ describe 'integration' do
     end
 
     def do_put
-      put path, {}, 'HTTP_ACCEPT' => 'application/json'
+      put path, {user_id: 37}.to_json, 'HTTP_ACCEPT' => 'application/json', 'Conten-Type' => 'application/json'
     end
 
     it 'returns a session' do
@@ -29,7 +28,7 @@ describe 'integration' do
       expect(last_response.content_type).to eq('application/json')
 
       body = JSON.parse(last_response.body, symbolize_names: true)
-      expect(body).to eq id: session_id
+      expect(body).to eq id: session_id, content: {user_id: 37}
     end
   end
 end

@@ -12,4 +12,12 @@ RSpec.describe Session do
     expect(session_1).to eq session_1_copy
     expect(session_1).not_to eq session_2
   end
+
+  it 'its content defaults to {}' do
+    session = Session.new
+    expect(session.content).to eq({})
+
+    session.content = {x: 'y'}
+    expect(session.content).to eq({x: 'y'})
+  end
 end

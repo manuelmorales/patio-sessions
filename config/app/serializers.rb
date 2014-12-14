@@ -5,6 +5,7 @@ let :sessions do
     def session session
       {
         :id => session.id,
+        :content => session.content,
       }
     end
   end
