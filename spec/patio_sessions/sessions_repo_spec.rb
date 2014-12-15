@@ -42,14 +42,15 @@ RSpec.describe SessionsRepo do
           redis { Lazy.new { Redis.new } }
 
           def [] key
-            result = redis.get key
-            Marshal.load result if result
+            redis.get key
           end
 
           def []= key, value
-            redis.set key, Marshal.dump(value)
+            redis.set key, value
           end
         end
+
+        r.mapper = Marshal
       end
     end
 

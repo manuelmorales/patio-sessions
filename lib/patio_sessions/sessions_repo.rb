@@ -5,13 +5,14 @@ module PatioSessions
 
     attr_injectable :not_found_exception
     attr_injectable :store
+    attr_injectable :mapper
 
     def find id
-      store[id] || raise(not_found_exception.new "Could not find session #{id}", id: id)
+      mapper.load store[id] || raise(not_found_exception.new "Could not find session #{id}", id: id)
     end
 
     def save session
-      store[session.id] = session
+      store[session.id] = mapper.dump session
     end
   end
 end
