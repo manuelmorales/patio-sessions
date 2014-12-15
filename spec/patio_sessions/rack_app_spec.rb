@@ -2,7 +2,6 @@ require_relative '../rack_spec_helper'
 
 describe 'rack' do
   let(:app){ patio_app.rack }
-  let(:patio_app) { App.new }
 
   it 'returns 404 for unknown paths' do
     get '/dasadsadda'

@@ -5,7 +5,6 @@ RSpec.describe SessionsRepo do
     patio_app.repos.sessions
   end
 
-  let(:patio_app) { App.new }
   let(:session) { Session.new }
 
   describe '#find(id)' do
@@ -36,21 +35,7 @@ RSpec.describe SessionsRepo do
     let(:redis_store) { {} }
     let(:subject) do
       patio_app.repos.sessions.tap do |r|
-        r.store = Inline.new do
-          cattr_injectable :redis
-
-          redis { Lazy.new { Redis.new } }
-
-          def [] key
-            redis.get key
-          end
-
-          def []= key, value
-            redis.set key, value
-          end
-        end
-
-        r.mapper = Marshal
+        r.store = patio_app.stores.memory
       end
     end
 

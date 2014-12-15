@@ -2,7 +2,6 @@ require_relative '../rack_spec_helper'
 
 describe 'integration' do
   let(:app){ patio_app.rack }
-  let(:patio_app) { App.new }
 
   describe 'GET /sessions/:id' do
     let(:path) { "/sessions/#{session_id}" }

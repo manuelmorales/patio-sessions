@@ -19,6 +19,18 @@ module PatioSessions
           repos.eval_file 'config/app/repos.rb'
         end
 
+        root.section :stores do |repos|
+          repos.eval_file 'config/app/stores.rb'
+        end
+
+        root.section :mappers do |repos|
+          repos.eval_file 'config/app/mappers.rb'
+        end
+
+        root.section :repos do |repos|
+          repos.eval_file 'config/app/repos.rb'
+        end
+
         root.section :exceptions do |exceptions|
           exceptions.eval_file 'config/app/exceptions.rb'
         end

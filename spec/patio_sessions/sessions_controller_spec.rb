@@ -3,7 +3,6 @@ require_relative '../rack_spec_helper'
 describe SessionsController do
   context 'Show' do
     let(:app){ patio_app.rack }
-    let(:patio_app) { App.new }
 
     let(:path) { "/sessions/#{session_id}" }
     let(:action) { patio_app.actions.sessions.show }
@@ -83,7 +82,6 @@ describe SessionsController do
 
   context 'Update' do
     let(:app){ patio_app.rack }
-    let(:patio_app) { App.new }
 
     let(:path) { "/sessions/#{session_id}" }
     let(:action) { patio_app.actions.sessions.update }
