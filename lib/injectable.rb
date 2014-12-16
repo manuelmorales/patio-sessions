@@ -48,12 +48,18 @@ module Injectable
   end
 
   def let name, &block
+    var_name = :"@#{name}"
+
     define_singleton_method "#{name}=" do |value|
-      instance_eval "@#{name} = value", __FILE__, __LINE__
+      instance_variable_set var_name, value
     end
 
     define_singleton_method name do
-      instance_eval "defined?(@#{name}) ? @#{name} : @#{name} = block.call(self)", __FILE__, __LINE__
+      if instance_variable_defined? var_name
+        instance_variable_get var_name
+      else
+        instance_variable_set var_name, block.call(self)
+      end
     end
   end
 end
