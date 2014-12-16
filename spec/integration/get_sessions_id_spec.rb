@@ -2,12 +2,8 @@ require_relative '../rack_spec_helper'
 
 describe 'integration' do
   def patio_app
-    App.new
+    integration_app
   end
-
-  let(:patio_app) {
-    puts 'a'
-    App.new }
 
   let(:app){ patio_app.rack }
 

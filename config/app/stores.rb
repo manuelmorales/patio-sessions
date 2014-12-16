@@ -1,5 +1,4 @@
 let :redis do
-  puts 'redis'
   Inline.new do
     cattr_injectable :redis
 
@@ -11,6 +10,10 @@ let :redis do
 
     def []= key, value
       redis.set key, value
+    end
+
+    def clear
+      redis.flushdb
     end
   end
 end

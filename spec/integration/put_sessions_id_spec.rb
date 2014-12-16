@@ -1,6 +1,10 @@
 require_relative '../rack_spec_helper'
 
 describe 'integration' do
+  def patio_app
+    integration_app
+  end
+
   let(:app){ patio_app.rack }
 
   describe 'GET /sessions/:id' do
