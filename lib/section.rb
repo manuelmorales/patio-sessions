@@ -34,6 +34,8 @@ class Section
     "< #{name} >"
   end
 
+  alias to_s inspect
+
   def ancestors
     parent ? parent.path : []
   end

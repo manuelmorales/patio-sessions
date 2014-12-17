@@ -117,13 +117,13 @@ describe Section do
 
   describe '#inspect' do
     it 'contains the name of the ancestors' do
-      subject.name = 'subject'
-      subject.section :a do |a|
-        a.section :b do |b|
-          b.section(:c)
-        end
-      end
-      expect(subject.a.b.c.inspect).to match "< c >"
+      subject.section(:a){|s| s.section(:b) }
+      expect(subject.a.b.inspect).to match "< b >"
+    end
+
+    it 'is the same as to_s' do
+      subject.section(:a){|s| s.section(:b) }
+      expect(subject.to_s).to eq subject.inspect
     end
   end
 
