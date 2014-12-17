@@ -15,30 +15,26 @@ module PatioSessions
           end
         end
 
-        root.section :repos do |repos|
-          repos.eval_file 'config/app/repos.rb'
+        root.section :repos do |s|
+          s.eval_file 'config/app/repos.rb'
         end
 
-        root.section :stores do |repos|
-          repos.eval_file 'config/app/stores.rb'
+        root.section :stores do |s|
+          s.eval_file 'config/app/stores.rb'
         end
 
-        root.section :mappers do |repos|
-          repos.eval_file 'config/app/mappers.rb'
+        root.section :mappers do |s|
+          s.eval_file 'config/app/mappers.rb'
         end
 
-        root.section :repos do |repos|
-          repos.eval_file 'config/app/repos.rb'
-        end
-
-        root.section :exceptions do |exceptions|
-          exceptions.eval_file 'config/app/exceptions.rb'
+        root.section :exceptions do |s|
+          s.eval_file 'config/app/exceptions.rb'
         end
 
         root.eval_file 'config/app/rack.rb'
 
-        root.section :serializers do |serializers|
-          serializers.eval_file 'config/app/serializers.rb'
+        root.section :serializers do |s|
+          s.eval_file 'config/app/serializers.rb'
         end
       end
     end
