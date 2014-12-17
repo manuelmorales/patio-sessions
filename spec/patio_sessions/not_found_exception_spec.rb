@@ -1,8 +1,6 @@
 require_relative '../spec_helper'
 
 RSpec.describe 'exceptions' do
-  let(:patio_app) { App.new }
-
   def subject
     patio_app.exceptions.not_found
   end
