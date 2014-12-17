@@ -22,15 +22,14 @@ module TestApp
   end
 
   def integration_app
-    App.new
+    @integration_app ||= App.new.tap do |app|
+      app.stores.redis.on_tear_up(:clear) { |store| store.clear }
+    end
   end
 end
 
 RSpec.configure do |c|
   c.color = true
   c.include TestApp
-  c.after :each do
-    patio_app.stores.default.clear
-  end
 end
 
