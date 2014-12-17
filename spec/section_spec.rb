@@ -2,15 +2,17 @@ require_relative 'spec_helper'
 require 'section'
 
 describe Section do
+  subject { Section.new name: 'subject' }
+
   describe '#section' do
     it 'assigns the name' do
       subject.section(:my_section)
       expect(subject.my_section.name).to eq :my_section
     end
 
-    it 'assigns the root' do
-      subject.section(:my_section)
-      expect(subject.my_section.root).to eq subject
+    it 'assigns the parent' do
+      subject.section(:my_section){|s| s.section(:my_sub_section) }
+      expect(subject.my_section.my_sub_section.parent).to eq subject.my_section
     end
 
     it 'doesn\'t evaluate it at definition time' do
@@ -48,6 +50,27 @@ describe Section do
       end
       
       expect(subject.first_level.second_level).to be_a(Section)
+    end
+  end
+
+  describe '#root' do
+    it 'is the parent with no parent' do
+      subject.section(:a){|s| s.section(:b) }
+      expect(subject.a.b.root).to eq subject
+    end
+  end
+
+  describe '#ancestors' do
+    it 'is the the list of parents' do
+      subject.section(:a){|s| s.section(:b) }
+      expect(subject.a.b.ancestors).to eq [subject, subject.a]
+    end
+  end
+
+  describe '#path' do
+    it 'is the the list of parents and itself' do
+      subject.section(:a){|s| s.section(:b) }
+      expect(subject.a.b.path).to eq [subject, subject.a, subject.a.b]
     end
   end
 
@@ -93,18 +116,14 @@ describe Section do
   end
 
   describe '#inspect' do
-    it 'contains class, object id and name' do
-      subject.name = 'my_name'
-      expect(subject.inspect).to match /#<my_name:Section:0x.*>/
-    end
-
-    it 'uses the name of the first named class in the hirarchy' do
-      stub_const('MySection', Class.new(Section))
-      klass = Class.new MySection
-      subject = klass.new
-      subject.name = 'my_name'
-
-      expect(subject.inspect).to match /#<my_name:MySection.*>/
+    it 'contains the name of the ancestors' do
+      subject.name = 'subject'
+      subject.section :a do |a|
+        a.section :b do |b|
+          b.section(:c)
+        end
+      end
+      expect(subject.a.b.c.inspect).to match "< c >"
     end
   end
 

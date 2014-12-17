@@ -3,7 +3,7 @@ require 'injectable'
 class Section
   include Injectable
 
-  attr_accessor :root
+  attr_accessor :parent
   attr_accessor :name
 
   def initialize opts ={}, &block
@@ -19,7 +19,7 @@ class Section
   def section name, &block
     let name do
       self.class.new(name: name).tap do |a|
-        a.root = root || self
+        a.parent = self
         a.name = name
         block.call a if block
       end
@@ -31,7 +31,19 @@ class Section
   end
 
   def inspect
-    "#<#{name}:#{class_name}:0x#{'%x' % (object_id << 1)}>"
+    "< #{name} >"
+  end
+
+  def ancestors
+    parent ? parent.path : []
+  end
+
+  def path
+    ancestors << self
+  end
+
+  def root
+    path.first
   end
 
   private
