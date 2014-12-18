@@ -117,12 +117,21 @@ describe Section do
 
   describe '#inspect' do
     it 'contains the name of the ancestors' do
-      subject.section(:a){|s| s.section(:b) }
-      expect(subject.a.b.inspect).to match "< b >"
+      subject.section(:a1){|s| s.section(:b); s.section(:c) }
+      subject.section(:a2){|s| s.section(:b); s.section(:c) }
+      expect(subject.inspect).to eq <<-TEXT.gsub(/^ {6}/, '').strip
+      < subject >
+        < a1 >
+          < b >
+          < c >
+        < a2 >
+          < b >
+          < c >
+      TEXT
     end
 
     it 'is the same as to_s' do
-      subject.section(:a){|s| s.section(:b) }
+      subject.section(:a){|s| s.setion(:b) }
       expect(subject.to_s).to eq subject.inspect
     end
   end

@@ -24,17 +24,35 @@ class Section
         block.call a if block
       end
     end
+    children_names << name
+    name
+  end
+
+  def children_names
+    @children_names ||= []
+  end
+
+  def children
+    children_names.map{|n| send n }
   end
 
   def eval_file path
     instance_eval File.read(path), path
   end
 
-  def inspect
-    "< #{name} >"
+  def inspect depth = 0
+    out = "  " * depth + to_s
+
+    children.each do |child|
+      out << "\n" << child.inspect(depth + 1)
+    end
+
+    out
   end
 
-  alias to_s inspect
+  def to_s
+    "< #{name} >"
+  end
 
   def ancestors
     parent ? parent.path : []
