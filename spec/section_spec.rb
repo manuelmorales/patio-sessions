@@ -51,6 +51,13 @@ describe Section do
       
       expect(subject.first_level.second_level).to be_a(Section)
     end
+
+    it 'doesn\'t overwrite if nesting an already existent' do
+      subject.section(:a){|s| s.let(:b){ 2 } }
+      subject.section(:a){|s| s.let(:c){ 3 } }
+      expect(subject.a.b).to eq 2
+      expect(subject.a.c).to eq 3
+    end
   end
 
   describe '#root' do
@@ -119,8 +126,8 @@ describe Section do
     it 'contains the name of the ancestors' do
       subject.section(:a1){|s| s.section(:b); s.section(:c) }
       subject.section(:a2){|s| s.section(:b); s.section(:c) }
-      expect(subject.inspect).to eq <<-TEXT.gsub(/^ {6}/, '').strip
-      < subject >
+      expect(subject.inspect).to eq "\n" + <<-TEXT.gsub(/^ {6}/, '').strip
+      << subject >>
         < a1 >
           < b >
           < c >
@@ -130,9 +137,21 @@ describe Section do
       TEXT
     end
 
-    it 'is the same as to_s' do
-      subject.section(:a){|s| s.setion(:b) }
-      expect(subject.to_s).to eq subject.inspect
+    it "doesn't duplicate sections" do
+      subject.section(:a){|s| s.section(:b); s.section(:c) }
+      subject.section(:a){|s| s.section(:d) }
+      expect(subject.inspect).to eq "\n" + <<-TEXT.gsub(/^ {6}/, '').strip
+      << subject >>
+        < a >
+          < b >
+          < c >
+          < d >
+      TEXT
+    end
+
+    it 'is just the first entry' do
+      subject.section(:a){|s| s.section(:b) }
+      expect(subject.to_s).to eq '<< subject >>'
     end
   end
 

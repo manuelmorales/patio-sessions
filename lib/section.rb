@@ -17,14 +17,19 @@ class Section
   end
 
   def section name, &block
-    let name do
-      self.class.new(name: name).tap do |a|
-        a.parent = self
-        a.name = name
-        block.call a if block
+    if children_names.include? name 
+      block.call send(name)
+    else
+      let name do
+        self.class.new(name: name).tap do |a|
+          a.parent = self
+          a.name = name
+          block.call a if block
+        end
       end
+      children_names << name
     end
-    children_names << name
+
     name
   end
 
@@ -41,7 +46,9 @@ class Section
   end
 
   def inspect depth = 0
-    out = "  " * depth + to_s
+    out = ''
+    out << "\n" if depth == 0 && children.any?
+    out << "  " * depth + to_s
 
     children.each do |child|
       out << "\n" << child.inspect(depth + 1)
@@ -51,7 +58,11 @@ class Section
   end
 
   def to_s
-    "< #{name} >"
+    if root?
+      "<< #{name} >>"
+    else
+      "< #{name} >"
+    end
   end
 
   def ancestors
@@ -64,6 +75,10 @@ class Section
 
   def root
     path.first
+  end
+
+  def root?
+    !parent
   end
 
   private
