@@ -113,4 +113,16 @@ describe HashSection do
       expect(subject.a.b.c.get_obj.age).to eq 'old_age'
     end
   end
+
+  describe '.new' do
+    it 'allows passing a block' do
+      subject = HashSection.new do |s|
+        s.section :a do |a|
+          a.let(:b) { 2 }
+        end
+      end
+
+      expect(subject.a).to be_a HashSection
+    end
+  end
 end

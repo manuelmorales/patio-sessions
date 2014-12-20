@@ -7,13 +7,11 @@ class HashSection
   attr_accessor :name
 
   def initialize opts ={}, &block
-  #   super()
-
     opts.each do |k,v|
       send "#{k}=", v
     end
 
-  #   instance_exec self, &block if block
+    instance_exec self, &block if block
   end
 
   def section name, &block
