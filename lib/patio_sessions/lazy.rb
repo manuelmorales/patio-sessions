@@ -6,24 +6,26 @@ module PatioSessions
 
     def __getobj__
       @obj ||= @block.call.tap do |obj|
-        tear_up_blocs.each do |name, block|
+        build_steps.each do |name, block|
           block.call obj
         end
       end
     end
 
+    alias get_obj __getobj__
+
     def resolver_bound
       @block.binding.eval('self')
     end
 
-    def on_tear_up name, &block
-      tear_up_blocs[name] = block
+    def build_step name, &block
+      build_steps[name] = block
     end
 
     private
 
-    def tear_up_blocs
-      @tear_up_blocs ||= {}
+    def build_steps
+      @build_steps ||= {}
     end
   end
 end

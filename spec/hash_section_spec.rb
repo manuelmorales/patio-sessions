@@ -94,4 +94,23 @@ describe HashSection do
       subject.target.to_s
     end
   end
+
+  describe 'overriding' do
+    it 'is doable going directly to the lazy' do
+      require 'ostruct'
+      subject.section(:a) do |a|
+        a.section(:b) do |b| 
+          b.let(:c) { OpenStruct.new }.tap do |c|
+            c.build_step(:name) { |c| c.name = 'old_name' }
+            c.build_step(:age) { |c| c.age = 'old_age' }
+          end
+        end
+      end
+
+      subject.a.b.c.build_step(:name) { |o| o.name = 'new_name' }
+
+      expect(subject.a.b.c.get_obj.name).to eq 'new_name'
+      expect(subject.a.b.c.get_obj.age).to eq 'old_age'
+    end
+  end
 end

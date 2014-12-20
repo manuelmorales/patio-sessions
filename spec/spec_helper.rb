@@ -20,7 +20,7 @@ module TestApp
 
   def integration_app
     @integration_app ||= App.new.tap do |app|
-      app.stores.redis.on_tear_up(:clear) { |store| store.clear }
+      app.stores.redis.build_step(:clear) { |store| store.clear }
     end
   end
 end
