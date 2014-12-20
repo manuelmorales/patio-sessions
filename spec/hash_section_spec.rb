@@ -125,4 +125,39 @@ describe HashSection do
       expect(subject.a).to be_a HashSection
     end
   end
+
+  describe '#inspect' do
+    it 'contains the name of the ancestors' do
+      subject.section(:a1){|s| s.section(:b); s.section(:c) }
+      subject.section(:a2){|s| s.section(:b); s.section(:c) }
+      expect(subject.inspect).to eq "\n" + <<-TEXT.gsub(/^ {6}/, '').strip
+      << subject >>
+        < a1 >
+          < b >
+          < c >
+        < a2 >
+          < b >
+          < c >
+      TEXT
+    end
+
+    it "doesn't duplicate sections" do
+      subject.section(:a){|s| s.section(:b); s.section(:c) }
+      subject.section(:a){|s| s.section(:d) }
+      expect(subject.inspect).to eq "\n" + <<-TEXT.gsub(/^ {6}/, '').strip
+      << subject >>
+        < a >
+          < b >
+          < c >
+          < d >
+      TEXT
+    end
+  end
+
+  describe '#to_s' do
+    it 'is just the first entry' do
+      subject.section(:a){|s| s.section(:b) }
+      expect(subject.to_s).to eq '<< subject >>'
+    end
+  end
 end
