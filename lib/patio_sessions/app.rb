@@ -1,12 +1,8 @@
 require 'hashie' 
-require 'section'
+require 'hash_section'
 
 module PatioSessions
-  class App < Section
-    class AppSection < Section
-      include PatioSessions
-    end
-
+  module App
     def self.new
       HashSection.new name: 'app' do |root|
         root.section :actions do |actions|
