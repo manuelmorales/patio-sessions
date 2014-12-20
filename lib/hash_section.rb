@@ -44,17 +44,13 @@ class HashSection
 
   public
 
-  # def children_names
-  #   @children_names ||= []
-  # end
-
   def children
     sections.keys.map{|n| send n }
   end
 
-  # def eval_file path
-  #   instance_eval File.read(path), path
-  # end
+  def eval_file path
+    instance_eval File.read(path), path
+  end
 
   def inspect depth = 0
     out = ''

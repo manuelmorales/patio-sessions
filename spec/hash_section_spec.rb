@@ -160,4 +160,20 @@ describe HashSection do
       expect(subject.to_s).to eq '<< subject >>'
     end
   end
+
+  describe '#eval_file' do
+    it 'is executed in the scope of the object itself' do
+      file = Tempfile.new 'test'
+      file.write <<-FILE
+        section(:my_section) do |sec|
+          sec.let(:value) { object_id }
+        end
+      FILE
+      file.close
+
+      subject.eval_file file.path
+
+      expect(subject.my_section.value).to eq subject.object_id
+    end
+  end
 end
