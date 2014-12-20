@@ -1,7 +1,7 @@
 let :show do
   Class.new(SessionsController::Show).tap do |action|
     action.sessions_repo { root.repos.sessions }
-    action.not_found_exception { root.exceptions.not_found }
+    action.not_found_exception { root.exceptions.not_found.get_obj }
     action.serializer { root.serializers.sessions }
   end
 end

@@ -8,7 +8,7 @@ module PatioSessions
     end
 
     def self.new
-      AppSection.new name: 'app' do |root|
+      HashSection.new name: 'app' do |root|
         root.section :actions do |actions|
           actions.section :sessions do |sessions|
             sessions.eval_file 'config/app/actions/sessions.rb'

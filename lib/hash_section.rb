@@ -35,7 +35,13 @@ class HashSection
   end
 
   def method_missing name, *args
-    sections[name] || super
+    if value = sections[name]
+      value
+    elsif match = name.to_s.match(/(.*)=$/)
+      let(match[1].to_sym) { args.first }
+    else
+      super
+    end
   end
 
   def respond_to_missing? name, *args

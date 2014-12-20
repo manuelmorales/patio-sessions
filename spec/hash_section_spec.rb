@@ -93,6 +93,13 @@ describe HashSection do
       subject.target.to_s
       subject.target.to_s
     end
+
+    it 'allows assigning the result' do
+      subject.let(:target) { 1 }
+      subject.target = 2
+
+      expect(subject.target).to eq 2
+    end
   end
 
   describe 'overriding' do
