@@ -20,6 +20,8 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport'
   s.add_dependency 'hashie'
   s.add_dependency 'redis'
+  s.add_dependency 'ruby2ruby'
+  s.add_dependency 'method_source'
 
   s.add_development_dependency 'pry'
   s.add_development_dependency 'pry-byebug'

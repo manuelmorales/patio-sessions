@@ -26,7 +26,7 @@ module PatioSessions
     end
 
     def let name, &block
-      sections[name] = Lazy.new &block
+      sections[name] = Lazy.new name: name, &block
     end
 
     private
@@ -60,10 +60,10 @@ module PatioSessions
     end
 
     def inspect
-      out = "\n" + to_s
+      out = to_s
 
       children.each do |child|
-        out << child.inspect.gsub(/\n/,"\n  ")
+        out <<  "\n" + child.inspect.gsub(/^/,'  ')
       end
 
       out

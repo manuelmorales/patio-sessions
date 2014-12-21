@@ -137,7 +137,7 @@ describe HashSection do
     it 'contains the name of the ancestors' do
       subject.section(:a1){|s| s.section(:b); s.section(:c) }
       subject.section(:a2){|s| s.section(:b); s.section(:c) }
-      expect(subject.inspect).to eq "\n" + <<-TEXT.gsub(/^ {6}/, '').strip
+      expect(subject.inspect).to eq <<-TEXT.gsub(/^ {6}/, '').strip
       << subject >>
         < a1 >
           < b >
@@ -148,15 +148,21 @@ describe HashSection do
       TEXT
     end
 
-    it "doesn't duplicate sections" do
-      subject.section(:a){|s| s.section(:b); s.section(:c) }
-      subject.section(:a){|s| s.section(:d) }
-      expect(subject.inspect).to eq "\n" + <<-TEXT.gsub(/^ {6}/, '').strip
+    it "contains lets" do
+      subject.section(:a) do |s|
+        s.section(:b) do |b|
+          b.let(:c) { double(inspect: 'inspecting_c') }.tap do |c|
+            c.build_step(:step_1) { }
+            c.build_step(:step_2) { }
+          end
+        end
+      end
+
+      expect(subject.inspect).to eq <<-TEXT.gsub(/^ {6}/, '').strip
       << subject >>
         < a >
           < b >
-          < c >
-          < d >
+            < c: Lazy("b.let(:c) { double(inspect: 'inspecting_c') }.tap do |c|; c.…" step_1, step_2) >
       TEXT
     end
   end
