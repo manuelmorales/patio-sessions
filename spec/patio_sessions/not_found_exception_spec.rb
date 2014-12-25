@@ -2,7 +2,7 @@ require_relative '../spec_helper'
 
 RSpec.describe 'exceptions' do
   def subject
-    patio_app.exceptions.not_found
+    patio_app.exceptions.not_found.get_obj
   end
 
   describe 'not_found' do

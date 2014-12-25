@@ -3,7 +3,7 @@ require 'injectable'
 class Section
   include Injectable
 
-  attr_accessor :root
+  attr_accessor :parent
   attr_accessor :name
 
   def initialize opts ={}, &block
@@ -17,21 +17,68 @@ class Section
   end
 
   def section name, &block
-    let name do
-      self.class.new(name: name).tap do |a|
-        a.root = root || self
-        a.name = name
-        block.call a if block
+    if children_names.include? name 
+      block.call send(name)
+    else
+      let name do
+        self.class.new(name: name).tap do |a|
+          a.parent = self
+          a.name = name
+          block.call a if block
+        end
       end
+      children_names << name
     end
+
+    name
+  end
+
+  def children_names
+    @children_names ||= []
+  end
+
+  def children
+    children_names.map{|n| send n }
   end
 
   def eval_file path
     instance_eval File.read(path), path
   end
 
-  def inspect
-    "#<#{name}:#{class_name}:0x#{'%x' % (object_id << 1)}>"
+  def inspect depth = 0
+    out = ''
+    out << "\n" if depth == 0 && children.any?
+    out << "  " * depth + to_s
+
+    children.each do |child|
+      out << "\n" << child.inspect(depth + 1)
+    end
+
+    out
+  end
+
+  def to_s
+    if root?
+      "<< #{name} >>"
+    else
+      "< #{name} >"
+    end
+  end
+
+  def ancestors
+    parent ? parent.path : []
+  end
+
+  def path
+    ancestors << self
+  end
+
+  def root
+    path.first
+  end
+
+  def root?
+    !parent
   end
 
   private

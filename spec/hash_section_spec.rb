@@ -1,10 +1,16 @@
 require_relative 'spec_helper'
-require 'section'
+require 'hash_section'
 
-describe Section do
-  subject { Section.new name: 'subject' }
+describe HashSection do
+  subject { HashSection.new name: 'subject' }
 
   describe '#section' do
+    it 'provides sections' do
+      subject.section(:my_section)
+      expect{ subject.my_section }.not_to raise_error
+      expect(subject.respond_to? :my_section).to eq true
+    end
+
     it 'assigns the name' do
       subject.section(:my_section)
       expect(subject.my_section.name).to eq :my_section
@@ -13,15 +19,6 @@ describe Section do
     it 'assigns the parent' do
       subject.section(:my_section){|s| s.section(:my_sub_section) }
       expect(subject.my_section.my_sub_section.parent).to eq subject.my_section
-    end
-
-    it 'doesn\'t evaluate it at definition time' do
-      target = double('target')
-      expect(target).not_to receive(:a_message)
-
-      subject.section(:my_section) do
-        target.a_message
-      end
     end
 
     it 'memoizes the result' do
@@ -36,25 +33,17 @@ describe Section do
       subject.my_section
     end
 
-    it 'is of the right class' do
-      klass = Class.new Section
-      subject = klass.new
-
-      subject.section(:my_section)
-      expect(subject.my_section).to be_a(klass)
-    end
-
     it 'allows nesting' do
       subject.section(:first_level) do |first_level|
         first_level.section :second_level
       end
       
-      expect(subject.first_level.second_level).to be_a(Section)
+      expect(subject.first_level.second_level).to be_a(HashSection)
     end
 
     it 'doesn\'t overwrite if nesting an already existent' do
-      subject.section(:a){|s| s.let(:b){ 2 } }
-      subject.section(:a){|s| s.let(:c){ 3 } }
+      subject.section(:a){|s| s.define_singleton_method(:b){ 2 } }
+      subject.section(:a){|s| s.define_singleton_method(:c){ 3 } }
       expect(subject.a.b).to eq 2
       expect(subject.a.c).to eq 3
     end
@@ -101,8 +90,87 @@ describe Section do
         target
       end
 
-      subject.target
-      subject.target
+      subject.target.to_s
+      subject.target.to_s
+    end
+
+    it 'allows assigning the result' do
+      subject.let(:target) { 1 }
+      subject.target = 2
+
+      expect(subject.target).to eq 2
+    end
+  end
+
+  describe 'overriding' do
+    it 'is doable going directly to the lazy' do
+      require 'ostruct'
+      subject.section(:a) do |a|
+        a.section(:b) do |b| 
+          b.let(:c) { OpenStruct.new }.tap do |c|
+            c.build_step(:name) { |c| c.name = 'old_name' }
+            c.build_step(:age) { |c| c.age = 'old_age' }
+          end
+        end
+      end
+
+      subject.a.b.c.build_step(:name) { |o| o.name = 'new_name' }
+
+      expect(subject.a.b.c.get_obj.name).to eq 'new_name'
+      expect(subject.a.b.c.get_obj.age).to eq 'old_age'
+    end
+  end
+
+  describe '.new' do
+    it 'allows passing a block' do
+      subject = HashSection.new do |s|
+        s.section :a do |a|
+          a.let(:b) { 2 }
+        end
+      end
+
+      expect(subject.a).to be_a HashSection
+    end
+  end
+
+  describe '#inspect' do
+    it 'contains the name of the ancestors' do
+      subject.section(:a1){|s| s.section(:b); s.section(:c) }
+      subject.section(:a2){|s| s.section(:b); s.section(:c) }
+      expect(subject.inspect).to eq <<-TEXT.gsub(/^ {6}/, '').strip
+      << subject >>
+        < a1 >
+          < b >
+          < c >
+        < a2 >
+          < b >
+          < c >
+      TEXT
+    end
+
+    it "contains lets" do
+      subject.section(:a) do |s|
+        s.section(:b) do |b|
+          b.let(:c) { double(inspect: 'inspecting_c') }.tap do |c|
+            c.build_step(:step_1) { }
+            c.build_step(:step_2) { }
+          end
+        end
+      end
+
+      expect(subject.inspect).to eq <<-TEXT.gsub(/^ {6}/, '').strip
+      << subject >>
+        < a >
+          < b >
+            < c: Lazy("b.let(:c) { double(inspect: 'inspecting_c') }.tap do |c|; c.…" step_1, step_2) >
+      TEXT
+    end
+  end
+
+  describe '#to_s' do
+    it 'is just the first entry' do
+      subject.section(:a){|s| s.section(:b) }
+      expect(subject.to_s).to eq '<< subject >>'
     end
   end
 
@@ -119,94 +187,6 @@ describe Section do
       subject.eval_file file.path
 
       expect(subject.my_section.value).to eq subject.object_id
-    end
-  end
-
-  describe '#inspect' do
-    it 'contains the name of the ancestors' do
-      subject.section(:a1){|s| s.section(:b); s.section(:c) }
-      subject.section(:a2){|s| s.section(:b); s.section(:c) }
-      expect(subject.inspect).to eq "\n" + <<-TEXT.gsub(/^ {6}/, '').strip
-      << subject >>
-        < a1 >
-          < b >
-          < c >
-        < a2 >
-          < b >
-          < c >
-      TEXT
-    end
-
-    it "doesn't duplicate sections" do
-      subject.section(:a){|s| s.section(:b); s.section(:c) }
-      subject.section(:a){|s| s.section(:d) }
-      expect(subject.inspect).to eq "\n" + <<-TEXT.gsub(/^ {6}/, '').strip
-      << subject >>
-        < a >
-          < b >
-          < c >
-          < d >
-      TEXT
-    end
-
-    it 'is just the first entry' do
-      subject.section(:a){|s| s.section(:b) }
-      expect(subject.to_s).to eq '<< subject >>'
-    end
-  end
-
-  describe 'module including' do
-    let(:my_module) do
-      Module.new.tap do |m|
-        m::MY_CONSTANT = 37
-
-        m.class_eval do
-          def my_method
-            'hi'
-          end
-        end
-      end
-    end
-
-    let(:my_class) do
-      Class.new(Section).tap do |k|
-        k.send(:include, my_module)
-      end
-    end
-
-    subject { my_class.new }
-
-    it 'is accessible within sections and lets' do
-      subject.section(:one) do |one|
-        expect(one.my_method).to eq 'hi'
-
-        one.let(:two) { one.my_method }
-      end
-
-      expect(subject.one.two).to eq 'hi'
-    end
-
-    it 'is accessible with file_eval' do
-      file = Tempfile.new 'test'
-      file.write <<-FILE
-        my_method
-        MY_CONSTANT
-
-        section(:one) do |one|
-          my_method
-          MY_CONSTANT
-
-          one.let(:two) do
-            MY_CONSTANT
-            my_method
-          end
-        end
-      FILE
-      file.close
-
-      subject.eval_file file.path
-
-      expect(subject.one.two).to eq 'hi'
     end
   end
 end

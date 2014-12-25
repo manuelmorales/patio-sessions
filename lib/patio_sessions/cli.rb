@@ -2,6 +2,12 @@ require 'thor'
 
 module PatioSessions
   class Cli < Thor
+    def self.start
+      require 'benchmark'
+      bm = Benchmark.measure { |x| super }
+      puts "\n#{bm.total.round(3)} s execution time\n\n"
+    end
+
     desc 'test', 'run the rspec tests'
     def test *args
       args = ['spec'] if args.empty?
