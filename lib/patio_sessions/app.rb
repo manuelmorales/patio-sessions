@@ -1,5 +1,4 @@
 require 'hashie' 
-require 'hash_section'
 
 module PatioSessions
   module App

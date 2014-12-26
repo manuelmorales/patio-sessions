@@ -1,5 +1,4 @@
 require_relative 'spec_helper'
-require 'hash_section'
 
 describe HashSection do
   subject { HashSection.new name: 'subject' }

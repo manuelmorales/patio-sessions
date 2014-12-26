@@ -1,6 +1,6 @@
 require 'injectable'
 
-module PatioSessions
+module MiniObject
   class HashSection
     # include Injectable
 
