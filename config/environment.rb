@@ -1,5 +1,6 @@
 require 'bundler'
 require 'yaml'
+require 'benchmark'
 
 config_file = 'config/bundler.yml'
 
@@ -17,8 +18,9 @@ bundler_envs << environment.to_sym
 bundler_envs << :development if environment.to_s == 'test'
 
 begin
-  $stdout.puts "Loading Bundler environments #{bundler_envs.inspect}"
-  Bundler.setup(*bundler_envs)
+  $stdout.print "Loading Bundler environments #{bundler_envs.join(", ")}"
+  bm = Benchmark.measure { |x| Bundler.setup(*bundler_envs) }
+  $stdout.print ": loaded in #{bm.total.round(3)}s\n"
 rescue Bundler::BundlerError => e
   $stderr.puts e.message
   $stderr.puts 'Try running "bundle install"'
