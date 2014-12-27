@@ -1,6 +1,9 @@
 require 'active_support'
+require 'mini_object'
 
 module PatioSessions
+  include MiniObject
+
   class << self
     def lib_path
       root_path + 'lib'

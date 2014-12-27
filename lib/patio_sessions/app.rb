@@ -1,10 +1,9 @@
 require 'hashie' 
-require 'hash_section'
 
 module PatioSessions
   module App
     def self.new
-      HashSection.new name: 'app' do |root|
+      Section.new name: 'app' do |root|
         root.section :actions do |actions|
           actions.section :sessions do |sessions|
             sessions.eval_file 'config/app/actions/sessions.rb'
