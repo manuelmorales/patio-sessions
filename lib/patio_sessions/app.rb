@@ -37,9 +37,7 @@ module PatioSessions
         end
 
         root.section :config do |s|
-          s.section :server do |serv|
-            serv.let(:port) { 22001 }
-          end
+          s.eval_file 'config/app/config.rb'
         end
       end
     end
