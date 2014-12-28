@@ -1,27 +1,14 @@
-let :redis do
-  Lazy.new do
-    Inline.new do
-      cattr_injectable :redis
+describe :redis do |r|
+  r.build { RedisStore.new }
 
-      redis { Lazy.new { require'redis'; Redis.new } }
-
-      def [] key
-        redis.get key
-      end
-
-      def []= key, value
-        redis.set key, value
-      end
-
-      def clear
-        redis.flushdb
-      end
-    end
+  r.build_step(:redis_connection) do |r|
+    require'redis'
+    r.redis = Redis.new(root.config.redis.get_obj)
   end
 end
 
 let :memory do
-  Lazy.new { {} }
+  {}
 end
 
 let :default do
