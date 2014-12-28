@@ -1,7 +1,11 @@
-require 'hashie' 
-
 module PatioSessions
   module App
+    require 'mini_object'
+
+    class Section < MiniObject::Section
+      include PatioSessions
+    end
+
     def self.new
       Section.new name: 'app' do |root|
         root.section :actions do |actions|

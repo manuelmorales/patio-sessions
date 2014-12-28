@@ -3,6 +3,8 @@ module PatioSessions
     require 'injectable'
 
     module Base
+      include MiniObject
+
       module ClassMethods
         def call env
           new.call env
