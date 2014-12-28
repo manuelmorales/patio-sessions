@@ -32,7 +32,9 @@ describe Cli do
 
   describe '#start' do
     it 'runs a Puma server' do
-      expect_any_instance_of(Puma::CLI).to receive(:run)
+      a_puma = double('a puma')
+      expect(Puma::CLI).to receive(:new).with(['-p', '22001']).and_return a_puma
+      expect(a_puma).to receive(:run)
       cli.start
     end
   end

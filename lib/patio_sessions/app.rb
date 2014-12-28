@@ -35,6 +35,12 @@ module PatioSessions
         root.section :serializers do |s|
           s.eval_file 'config/app/serializers.rb'
         end
+
+        root.section :config do |s|
+          s.section :server do |serv|
+            serv.let(:port) { 22001 }
+          end
+        end
       end
     end
   end
