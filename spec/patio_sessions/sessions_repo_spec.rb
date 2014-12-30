@@ -1,9 +1,7 @@
 require_relative '../spec_helper'
 
 RSpec.describe SessionsRepo do
-  def subject
-    patio_app.repos.sessions
-  end
+  subject { patio_app.repos.sessions }
 
   let(:session) { Session.new }
 

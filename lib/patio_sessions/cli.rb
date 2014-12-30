@@ -6,7 +6,7 @@ module PatioSessions
     private
 
     def puma_args
-      ['-p', app.config.server.port.get_obj.to_s]
+      ['-p', app.config.server['port'].to_s]
     end
 
     def app

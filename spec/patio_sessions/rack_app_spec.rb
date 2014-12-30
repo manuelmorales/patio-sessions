@@ -24,7 +24,7 @@ describe 'rack' do
       get path
 
       new_action = double('action')
-      patio_app.actions.sessions.show = new_action
+      patio_app.actions.sessions.tool(:show) { new_action }
       expect(new_action).to receive(:call).and_return([200, {}, []])
       get path
     end
