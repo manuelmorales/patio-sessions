@@ -11,14 +11,15 @@ module PatioSessions
       end
 
       tool :redis do
+        define(:connection_config) { root.config.redis }
+        define(:after_connect) { } # template method
+
         RedisStore.new.tap do |r|
           require 'redis'
           r.redis = Redis.new connection_config
           after_connect r
         end
       end
-      tool(:redis).define(:connection_config) { root.config.redis }
-      tool(:redis).define(:after_connect) { } # template method
 
     end
   end
