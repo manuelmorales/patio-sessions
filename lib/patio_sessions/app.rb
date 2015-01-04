@@ -1,6 +1,7 @@
 module PatioSessions
   module App
     require 'mini_object'
+    include MiniObject
 
     Dir.glob("#{PatioSessions.lib_path}/patio_sessions/app/*.rb") do |path|
       require path
