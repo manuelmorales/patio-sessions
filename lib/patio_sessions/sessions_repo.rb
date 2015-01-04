@@ -1,7 +1,8 @@
+require 'mini_object'
+
 module PatioSessions
   class SessionsRepo
-    require 'injectable'
-    include Injectable
+    include MiniObject::Injectable
 
     attr_injectable :not_found_exception
     attr_injectable :store

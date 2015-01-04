@@ -6,3 +6,6 @@ docs/*html
 docs/*png
 docs/*cache
 
+config/*.yml
+!config/*-defaults.yml
+
