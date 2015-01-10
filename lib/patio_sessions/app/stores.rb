@@ -1,26 +1,38 @@
 module PatioSessions
-  module App
-    Stores = Proc.new do
+  class App < Box
+    class Stores < Box
+      attr_accessor :root
+      attr_injectable :default
 
-      tool :memory do
-        {}
+      def initialize root
+        @root = root
       end
 
-      tool :default do
-        root.stores.memory
+      def memory
+        @memory ||= {}
       end
 
-      tool :redis do
-        define(:connection_config) { root.config.redis }
-        define(:after_connect) { } # template method
-
-        RedisStore.new.tap do |r|
+      def redis
+        @redis ||= RedisStore.new.tap do |r|
           require 'redis'
           r.redis = Redis.new connection_config
-          after_connect r
+          on_redis_connect.call r
         end
       end
 
+      def on_redis_connect &block
+        if block
+          @on_redis_connect = block
+        else
+          @on_redis_connect ||= Proc.new
+        end
+      end
+
+      private
+
+      def connection_config
+        root.config.redis
+      end
     end
   end
 end

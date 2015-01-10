@@ -1,17 +1,16 @@
 module PatioSessions
-  module App
-    Configuration = Proc.new do
-
-      tool :server do |serv|
-        opts = YAML.load File.read 'config/server-defaults.yml'
-        opts.merge! YAML.load File.read 'config/server.yml' if File.exist?('config/server.yml')
-        opts
+  class App
+    class Configuration < Box
+      def server
+        @server ||= YAML.load(File.read 'config/server-defaults.yml').tap do |opts|
+          opts.merge! YAML.load File.read 'config/server.yml' if File.exist?('config/server.yml')
+        end
       end
 
-      tool :redis do |redis|
-        opts = YAML.load File.read 'config/redis-defaults.yml'
-        opts.merge! YAML.load File.read 'config/redis.yml' if File.exist?('config/redis.yml')
-        opts
+      def redis
+        @redis ||= YAML.load(File.read 'config/redis-defaults.yml').tap do |opts|
+          opts.merge! YAML.load File.read 'config/redis.yml' if File.exist?('config/redis.yml')
+        end
       end
 
       # TODO: symbolize keys

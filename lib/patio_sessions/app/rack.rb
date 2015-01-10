@@ -1,7 +1,7 @@
 module PatioSessions
-  module App
-    Rack = Proc.new do |rack|
-      actions = rack.root.actions.sessions
+  class App
+    Rack = Proc.new do |root|
+      actions = root.actions.sessions
 
       require 'lotus-router'
 

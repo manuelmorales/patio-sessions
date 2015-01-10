@@ -14,13 +14,13 @@ module TestApp
 
   def test_app
     @patio_app ||= App.new.tap do |app|
-      app.stores.tool(:default){ app.stores.memory }
+      app.stores.default { app.stores.memory }
     end
   end
 
   def integration_app
     @integration_app ||= App.new.tap do |app|
-      app.stores.tool(:redis).define(:after_connect) { |store| store.clear }
+      app.stores.on_redis_connect { |redis| redis.clear }
     end
   end
 end

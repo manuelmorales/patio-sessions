@@ -1,9 +1,9 @@
 module PatioSessions
-  module App
-    Serializers = Proc.new do
+  class App
+    class Serializers < Box
 
-      tool :sessions do
-        Inline.new do
+      def sessions
+        @sessions ||= Inline.new do
           def session session
             {
               :id => session.id,

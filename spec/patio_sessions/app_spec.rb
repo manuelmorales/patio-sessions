@@ -13,7 +13,7 @@ RSpec.describe App do
           expect(actions.show.sessions_repo).to eq subject.repos.sessions
 
           new_repo = double('new_sessions_repo')
-          subject.repos.tool(:sessions) { new_repo }
+          subject.repos.sessions { new_repo }
           expect(actions.show.sessions_repo).to eq new_repo
         end
       end

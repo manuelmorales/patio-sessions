@@ -1,16 +1,18 @@
 module PatioSessions
-  module App
-    Exceptions = Proc.new do
-      tool :not_found do
-        Class.new(StandardError) do
-          attr_accessor :id
+  class App
+    class Exceptions < Box
 
-          def initialize msg, attrs = {}
-            super msg
-            attrs.each { |k, v| send("#{k}=", v) }
-          end
+      class NotFound < StandardError
+        attr_accessor :id
+
+        def initialize msg, attrs = {}
+          super msg
+          attrs.each { |k, v| send("#{k}=", v) }
         end
       end
+      def self.not_found; NotFound end
+
     end
   end
 end
+

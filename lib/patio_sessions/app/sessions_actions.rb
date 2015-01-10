@@ -1,18 +1,33 @@
 module PatioSessions
-  module App
-    SessionsActions = Proc.new do
+  class App
+    class SessionsActions < Box
+      attr_accessor :root
+      attr_injectable :show
+      attr_injectable :update
 
-      tool :show do
-        Class.new(SessionsController::Show).tap do |action|
-          action.sessions_repo { root.repos.sessions }
-          action.not_found_exception { root.exceptions.not_found }
-          action.serializer { root.serializers.sessions }
+      def initialize root
+        @root = root
+        show &default_show
+        update &default_update
+      end
+
+      private
+
+      def default_show
+        lambda do
+          @show ||= Class.new(SessionsController::Show).tap do |action|
+            action.sessions_repo { root.repos.sessions }
+            action.not_found_exception { root.exceptions.not_found }
+            action.serializer { root.serializers.sessions }
+          end
         end
       end
 
-      tool :update do
-        Class.new(SessionsController::Update).tap do |action|
-          action.sessions_repo { root.repos.sessions }
+      def default_update
+        lambda do
+          @update ||= Class.new(SessionsController::Update).tap do |action|
+            action.sessions_repo { root.repos.sessions }
+          end
         end
       end
 
