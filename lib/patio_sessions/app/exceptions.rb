@@ -1,6 +1,6 @@
 module PatioSessions
   class App
-    class Exceptions < Box
+    class Exceptions < MiniObject::Box
 
       class NotFound < StandardError
         attr_accessor :id

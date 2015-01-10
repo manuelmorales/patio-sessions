@@ -1,9 +1,9 @@
 module PatioSessions
   class App
-    class Serializers < Box
+    class Serializers < MiniObject::Box
 
       def sessions
-        @sessions ||= Inline.new do
+        @sessions ||= MiniObject::Inline.new do
           def session session
             {
               :id => session.id,

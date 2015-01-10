@@ -1,6 +1,6 @@
 module PatioSessions
   class App
-    class Configuration < Box
+    class Configuration < MiniObject::Box
       def server
         @server ||= YAML.load(File.read 'config/server-defaults.yml').tap do |opts|
           opts.merge! YAML.load File.read 'config/server.yml' if File.exist?('config/server.yml')

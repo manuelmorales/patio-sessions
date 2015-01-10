@@ -1,6 +1,6 @@
 module PatioSessions
-  class App < Box
-    class Stores < Box
+  class App
+    class Stores < MiniObject::Box
       attr_accessor :root
       attr_injectable :default
 
@@ -24,7 +24,7 @@ module PatioSessions
         if block
           @on_redis_connect = block
         else
-          @on_redis_connect ||= Proc.new
+          @on_redis_connect ||= Proc.new { }
         end
       end
 

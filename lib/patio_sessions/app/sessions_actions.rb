@@ -1,6 +1,6 @@
 module PatioSessions
   class App
-    class SessionsActions < Box
+    class SessionsActions < MiniObject::Box
       attr_accessor :root
       attr_injectable :show
       attr_injectable :update

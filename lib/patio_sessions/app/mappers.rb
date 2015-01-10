@@ -1,8 +1,8 @@
 module PatioSessions
   class App
-    class Mappers < Box
+    class Mappers < MiniObject::Box
       def transparent
-        Inline.new do
+        MiniObject::Inline.new do
           def load x; x; end
           def dump x; x; end
         end
