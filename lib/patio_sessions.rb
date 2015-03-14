@@ -23,6 +23,8 @@ module PatioSessions
       end
 
       VERSION # to force laoding this one
+
+      autoload :MiniResponsible, 'mini_responsible'
     end
   end
 
