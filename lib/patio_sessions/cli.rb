@@ -3,6 +3,12 @@ require 'mini_cli'
 
 module PatioSessions
   class Cli < MiniCli::Base
+    desc 'start', 'Starts the Puma and any other required thread'
+    define_method :start do
+      require 'puma/cli'
+      Puma::CLI.new(puma_args).run
+    end
+
     private
 
     def puma_args
