@@ -1,72 +1,3 @@
-
-module Responsible
-  class JsonFormat
-    def content_type
-      'application/json'
-    end
-
-    def dump body
-      JSON.dump body if body
-    end
-  end
-
-  class Response
-    attr_accessor :body
-    attr_accessor :headers
-    attr_accessor :status
-    attr_accessor :format
-
-    def initialize opts = {}
-      @format = opts.fetch(:format) { JsonFormat.new }
-      @headers = {}
-      @status = 200
-    end
-
-    def to_rack
-      headers['Content-Type'] = format.content_type if body
-      Rack::Response.new [format.dump(body)], status, headers
-    end
-
-    def to_a
-      to_rack.to_a
-    end
-    alias to_ary to_a
-  end
-
-  module BaseModule
-    module ClassMethods
-      def call env
-        new.call env
-      end
-    end
-
-    def self.included klass
-      klass.class_eval do
-        extend ClassMethods
-      end
-    end
-
-    def call env
-      @env = env
-      action
-    end
-
-    private
-
-    def action
-      raise NotImplementedError.new
-    end
-
-    def response
-      @response ||= Response.new
-    end
-
-    def env
-      @env
-    end
-  end
-end
-
 module PatioSessions
   class SessionsController
     require 'injectable'
@@ -76,7 +7,7 @@ module PatioSessions
 
       def self.included klass
         klass.class_eval do
-          include Responsible::BaseModule
+          include MiniResponsible::BaseModule
           include Injectable
           extend Forwardable
 
