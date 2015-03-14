@@ -134,7 +134,7 @@ describe SessionsController do
 
       it 'doesn\'t return [nil] as body as Puma has trouble with that' do
         do_request
-        expect(last_response.instance_variable_get(:@body)).to eq []
+        expect(last_response.instance_variable_get(:@body)).to eq ['']
       end
 
       it 'stores a new session in the repo' do

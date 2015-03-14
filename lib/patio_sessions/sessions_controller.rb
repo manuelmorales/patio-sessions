@@ -2,19 +2,37 @@ module PatioSessions
   class SessionsController
     require 'injectable'
 
+    class JsonFormat
+      def content_type
+        'application/json'
+      end
+
+      def dump body
+        JSON.dump body if body
+      end
+    end
+
     class Response
       attr_accessor :body
       attr_accessor :headers
       attr_accessor :status
+      attr_accessor :format
 
-      def initialize
+      def initialize opts = {}
+        @format = opts.fetch(:format) { JsonFormat.new }
         @headers = {}
         @status = 200
       end
 
-      def to_rack_response
-        [status, headers, [body && body.to_json].compact]
+      def to_rack
+        headers['Content-Type'] = format.content_type if body
+        Rack::Response.new [format.dump(body)], status, headers
       end
+
+      def to_a
+        to_rack.to_a
+      end
+      alias to_ary to_a
     end
 
     module Base
@@ -83,7 +101,7 @@ module PatioSessions
       end
 
       def render
-        response.to_rack_response
+        response.to_rack
       end
 
       def env
@@ -102,28 +120,32 @@ module PatioSessions
 
       def call env
         @env = env
-        header 'Content-Type', 'application/json'
-
-        begin
-          action
-          render
-        rescue not_found_exception => e
-          message = "Could not find session with id #{e.id}"
-          body error_code: :not_found, error_message: message
-          status 404
-          render
-        end
+        action
       end
 
       private
 
       def action
-        session = sessions_repo.find(session_id)
-        body serializer.session(session)
+        not_found_handled do
+          session = sessions_repo.find(session_id)
+          response.body = serializer.session(session)
+          response
+        end
       end
 
       def session_id
         env['router.params'][:id]
+      end
+
+      def not_found_handled
+        begin
+          yield
+        rescue not_found_exception => e
+          message = "Could not find session with id #{e.id}"
+          response.body = {error_code: :not_found, error_message: message}
+          response.status = 404
+          response
+        end
       end
     end
 
