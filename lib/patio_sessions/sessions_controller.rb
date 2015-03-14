@@ -2,6 +2,21 @@ module PatioSessions
   class SessionsController
     require 'injectable'
 
+    class Response
+      attr_accessor :body
+      attr_accessor :headers
+      attr_accessor :status
+
+      def initialize
+        @headers = {}
+        @status = 200
+      end
+
+      def to_rack_response
+        [status, headers, [body && body.to_json].compact]
+      end
+    end
+
     module Base
       include MiniObject
 
@@ -41,34 +56,34 @@ module PatioSessions
 
       def body value = NULL
         if value == NULL
-          @body
+          response.body
         else
-          @body = value
+          response.body = value
         end
       end
 
       def header key, value = NULL
         if value == NULL
-          headers[key]
+          response.headers[key]
         else
-          headers[key] = value
+          response.headers[key] = value
         end
-      end
-
-      def headers
-        @headers ||= {}
       end
 
       def status value = NULL
         if value == NULL
-          @status ||= 200
+          response.status ||= 200
         else
-          @status = value
+          response.status = value
         end
       end
 
+      def response
+        @response ||= Response.new
+      end
+
       def render
-        [status, headers, [body && body.to_json].compact]
+        response.to_rack_response
       end
 
       def env

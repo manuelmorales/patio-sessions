@@ -17,6 +17,14 @@ bundle install
 ./cli # to show help
 ```
 
+## TODO
+
+* Swagger UI
+* Swagger documentation
+* Rethink actions
+* Request signing
+* Redis connection handling on app shutdown
+
 
 ## License
 
